@@ -1,0 +1,52 @@
+{
+  "name": "@aicss/react",
+  "version": "0.1.1",
+  "description": "AICSS React UI components for AI agent conversations. Self-contained CSS, no Tailwind required in your app.",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": ["**/*.css"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kvnkld/aicss.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://www.aicss.dev",
+  "files": [
+    "src"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./thinking-state": "./src/thinking-state/index.ts",
+    "./thinking-reasoning": "./src/thinking-reasoning/index.ts",
+    "./orbs": "./src/orbs/index.ts",
+    "./text-response": "./src/text-response/index.ts",
+    "./streaming-text": "./src/streaming-text/index.ts",
+    "./code-block": "./src/code-block/index.ts",
+    "./task-list": "./src/task-list/index.ts",
+    "./data-table": "./src/data-table/index.ts",
+    "./ai-agent-input": "./src/ai-agent-input/index.ts",
+    "./approval-card": "./src/approval-card/index.ts"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "lucide-react": "^1.25.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "typescript": "^5"
+  },
+  "keywords": [
+    "aicss",
+    "react",
+    "ui",
+    "components",
+    "ai",
+    "agent"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@aicss/cli",
+  "version": "0.1.1",
+  "description": "Install AICSS UI components into your project. Free components need no account; Pro components unlock with AICSS_TOKEN.",
+  "type": "module",
+  "bin": {
+    "aicss": "bin/aicss.mjs"
+  },
+  "files": [
+    "bin"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "aicss",
+    "ui",
+    "components",
+    "react",
+    "vue",
+    "svelte",
+    "css",
+    "shadcn"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kvnkld/aicss.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://www.aicss.dev"
+}

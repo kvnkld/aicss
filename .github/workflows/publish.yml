@@ -1,0 +1,40 @@
+name: Publish npm
+
+on:
+  push:
+    tags:
+      - "react-v*"
+      - "cli-v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Install (no lockfile in the public tree)
+        run: npm install --ignore-scripts
+
+      - name: Publish @aicss/react
+        if: startsWith(github.ref_name, 'react-v')
+        working-directory: packages/react
+        run: npm publish --access public --provenance
+
+      - name: Publish @aicss/cli
+        if: startsWith(github.ref_name, 'cli-v')
+        working-directory: packages/cli
+        run: npm publish --access public --provenance
