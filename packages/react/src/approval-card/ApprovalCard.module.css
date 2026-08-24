@@ -667,8 +667,8 @@
   background: #1a1a1a;
   box-shadow:
     0 0 0 0.5px rgba(255, 255, 255, 0.12),
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    0 2px 4px rgba(0, 0, 0, 0.3);
+    0 1px 2px rgba(0, 0, 0, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.12);
 }
 :global([data-theme="dark"]) .optionInput,
 :global(.dark) .optionInput { color: #f5f5f5; }
@@ -735,7 +735,7 @@
 :global(.dark) .autoApproveCancel { color: #34d399; }
 :global([data-theme="dark"]) .autoApproveTip::after,
 :global(.dark) .autoApproveTip::after {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
 }
 :global([data-theme="dark"]) .autoApproveCancelGlyph,
 :global(.dark) .autoApproveCancelGlyph {
@@ -785,8 +785,8 @@
     background: #1a1a1a;
     box-shadow:
       0 0 0 0.5px rgba(255, 255, 255, 0.12),
-      0 1px 2px rgba(0, 0, 0, 0.4),
-      0 2px 4px rgba(0, 0, 0, 0.3);
+      0 1px 2px rgba(0, 0, 0, 0.16),
+      0 2px 4px rgba(0, 0, 0, 0.12);
   }
   .optionInput { color: #f5f5f5; }
   .optionInput::placeholder { color: #737373; }
@@ -824,7 +824,7 @@
   .autoApprove { color: #737373; }
   .autoApproveCancel { color: #34d399; }
   .autoApproveTip::after {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
   }
   .autoApproveCancelGlyph {
     background: color-mix(in srgb, #34d399 22%, transparent);
