@@ -1,0 +1,25 @@
+/* Theme follows the nearest [data-theme] ancestor (preview switch),
+   then .dark, then the OS when no data-theme is set. */
+:global(:root),
+:global([data-theme="light"]) {
+  --st-fg: #1a1a1a;
+  --st-caret: #0b0d12;
+}
+:global([data-theme="dark"]),
+:global(.dark) {
+  --st-fg: #f5f5f5;
+  --st-caret: #f5f5f5;
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) {
+    --st-fg: #f5f5f5;
+    --st-caret: #f5f5f5;
+  }
+}
+
+.prose { max-width: 100%; font-size: 14px; line-height: 19px; color: var(--st-fg, #1a1a1a); overflow-wrap: anywhere; }
+.caret { display: inline-block; width: 8px; height: 1.05em; margin-left: 2px; background: var(--st-caret, #0b0d12); vertical-align: text-bottom; animation: caret-blink 1s step-end infinite; }
+/* solid while streaming, blink only once idle (matches the live component) */
+.caretSteady { animation: none; opacity: 1; }
+@keyframes caret-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .caret { animation: none; } }

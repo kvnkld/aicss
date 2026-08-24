@@ -1,0 +1,133 @@
+/* Theme follows the nearest [data-theme] ancestor (preview switch),
+   then .dark, then the OS when no data-theme is set. */
+:global(:root),
+:global([data-theme="light"]) {
+  --todo-fg: #1a1a1a;
+  --todo-bg: #fff;
+  --todo-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.02);
+  --todo-muted: #a1a1a1;
+  --todo-check: #15a06a;
+  --todo-strong: #1a1a1a;
+  --todo-pie-fg: #1a1a1a;
+  --todo-shine: linear-gradient(90deg, #1a1a1a 0%, #1a1a1a 30%, rgba(26, 26, 26, 0.45) 45%, rgba(26, 26, 26, 0.45) 55%, #1a1a1a 70%, #1a1a1a 100%);
+}
+:global([data-theme="dark"]),
+:global(.dark) {
+  --todo-fg: #f5f5f5;
+  --todo-bg: #1a1a1a;
+  --todo-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --todo-muted: #737373;
+  --todo-check: #34d399;
+  --todo-strong: #f5f5f5;
+  --todo-pie-fg: #f5f5f5;
+  --todo-shine: linear-gradient(90deg, #f5f5f5 0%, #f5f5f5 30%, rgba(245, 245, 245, 0.45) 45%, rgba(245, 245, 245, 0.45) 55%, #f5f5f5 70%, #f5f5f5 100%);
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) {
+    --todo-fg: #f5f5f5;
+    --todo-bg: #1a1a1a;
+    --todo-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+      0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+    --todo-muted: #737373;
+    --todo-check: #34d399;
+    --todo-strong: #f5f5f5;
+    --todo-pie-fg: #f5f5f5;
+    --todo-shine: linear-gradient(90deg, #f5f5f5 0%, #f5f5f5 30%, rgba(245, 245, 245, 0.45) 45%, rgba(245, 245, 245, 0.45) 55%, #f5f5f5 70%, #f5f5f5 100%);
+  }
+}
+
+.todo { width: 100%; max-width: 100%; font-family: "Inter", system-ui, sans-serif; font-size: 13px; color: var(--todo-fg, #1a1a1a); background: var(--todo-bg, #fff); border-radius: 12px; padding: 6px 12px 12px; box-shadow: var(--todo-shadow); }
+.todoHead {
+  display: flex; width: 100%; align-items: center; gap: 8px;
+  padding: 0; border: 0; background: transparent; cursor: pointer;
+  color: var(--todo-fg, #1a1a1a); font-size: 13px; min-height: 22px;
+}
+.todoHeadIcon { position: relative; width: 16px; height: 16px; flex: none; color: var(--todo-muted, #a1a1a1); }
+.todoListIcon, .todoChevron, .todoHeadCheck { position: absolute; inset: 0; margin: auto; transition: opacity 140ms ease; }
+.todoListIcon, .todoChevron { width: 13px; height: 13px; }
+/* the solid check reads smaller than an outlined glyph, so render it full-size */
+.todoHeadCheck { width: 16px; height: 16px; color: var(--todo-check, #15a06a); }
+.todoChevron { opacity: 0; transition: opacity 140ms ease, transform 220ms ease; }
+.todoHead[aria-expanded="false"] .todoChevron { transform: rotate(-90deg); }
+.todoHead:hover .todoListIcon, .todoHead:hover .todoHeadPie, .todoHead:hover .todoHeadCheck { opacity: 0; }
+.todoHead:hover .todoChevron { opacity: 1; }
+.todoTitle { font-weight: 500; }
+.todoCount { margin-left: auto; color: var(--todo-muted, #a1a1a1); font-variant-numeric: tabular-nums; }
+.rollCount { display: inline-flex; align-items: baseline; }
+.rollDigit { display: inline-block; overflow: hidden; height: 1em; line-height: 1em; }
+.rollInner { display: flex; flex-direction: column; transition: transform 350ms cubic-bezier(0.4, 0, 0.2, 1); }
+.rollInner span { height: 1em; line-height: 1em; }
+.rollInner.on { transform: translateY(-1em); }
+.rollStatic { display: inline-block; height: 1em; line-height: 1em; }
+.todoCollapsible {
+  display: grid; grid-template-rows: 1fr; opacity: 1;
+  transition: grid-template-rows 280ms ease, opacity 200ms ease;
+}
+.todoCollapsible.isCollapsed { grid-template-rows: 0fr; opacity: 0; pointer-events: none; }
+.todoInner { min-height: 0; overflow: hidden; }
+.todoList { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 10px 0 0; }
+.todoItem {
+  display: flex; align-items: flex-start; gap: 9px; line-height: 18px; color: var(--todo-muted, #a1a1a1);
+  animation: todo-item-in 360ms ease backwards;
+  animation-delay: calc(var(--i, 0) * 50ms);
+}
+@keyframes todo-item-in {
+  from { opacity: 0; transform: translateY(-7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.todoIconWrap { position: relative; width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.todoIcon {
+  position: absolute; inset: 0; width: 16px; height: 16px; color: var(--todo-muted, #a1a1a1);
+  opacity: 0; transition: opacity 320ms ease;
+}
+.todoIcon.on { opacity: 1; }
+.todoIcon.strong { color: var(--todo-strong, #1a1a1a); }
+.todoLabel {
+  position: relative; font-weight: 400; color: var(--todo-muted, #a1a1a1);
+  transition: color 360ms ease;
+}
+/* crossfade the gray label into the dark shimmering active state */
+.todoLabel::before {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  background: var(--todo-shine, linear-gradient(90deg, #1a1a1a 0%, #1a1a1a 30%, rgba(26, 26, 26, 0.45) 45%, rgba(26, 26, 26, 0.45) 55%, #1a1a1a 70%, #1a1a1a 100%));
+  background-size: 300% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  opacity: 0; transition: opacity 360ms ease; pointer-events: none;
+}
+.todoItem.active .todoLabel { color: transparent; }
+.todoItem.active .todoLabel::before {
+  opacity: 1;
+  animation: todo-shine 2.25s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+}
+.todoItem.done .todoLabel { color: var(--todo-muted, #a1a1a1); text-decoration: line-through; }
+@keyframes todo-shine {
+  0%, 18% { background-position: 100% 0; }
+  82%, 100% { background-position: 0% 0; }
+}
+
+/* running progress pie in the header - determinate fill = completed / total */
+@property --todo-pie {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+.todoHeadPie {
+  position: absolute; inset: 0; margin: auto; width: 13px; height: 13px; border-radius: 50%;
+  color: var(--todo-pie-fg, #1a1a1a);
+  transition: opacity 140ms ease, --todo-pie 400ms ease;
+}
+/* dotted outline matching the pending item circles */
+.todoHeadPieRing { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; color: var(--todo-muted, #a1a1a1); }
+.todoHeadPie::after {
+  content: ""; position: absolute; inset: 2.6px; border-radius: 50%;
+  background: conic-gradient(currentColor var(--todo-pie, 0%), transparent 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .todoItem { animation: none; }
+  .todoIcon, .todoLabel, .todoLabel::before { transition: none; }
+  .todoItem.active .todoLabel::before { animation: none; }
+}

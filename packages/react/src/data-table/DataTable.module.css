@@ -1,0 +1,44 @@
+/* Theme follows the nearest [data-theme] ancestor (preview switch),
+   then .dark, then the OS when no data-theme is set. */
+:global(:root),
+:global([data-theme="light"]) {
+  --tbl-bg: #fafafa;
+  --tbl-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.02);
+  --tbl-body-bg: #fff;
+  --tbl-line: #e6e8ec;
+  --tbl-cell: #1a1a1a;
+}
+:global([data-theme="dark"]),
+:global(.dark) {
+  --tbl-bg: #242424;
+  --tbl-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --tbl-body-bg: #1a1a1a;
+  --tbl-line: #303030;
+  --tbl-cell: #f5f5f5;
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) {
+    --tbl-bg: #242424;
+    --tbl-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+      0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+    --tbl-body-bg: #1a1a1a;
+    --tbl-line: #303030;
+    --tbl-cell: #f5f5f5;
+  }
+}
+
+.tbl { width: 100%; max-width: 100%; display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: var(--tbl-bg, #fafafa); box-shadow: var(--tbl-shadow); font-size: 13px; }
+.tblHead { display: flex; color: #a1a1a1; font-weight: 500; }
+.tblHead .tblCell { padding-top: 7px; padding-bottom: 7px; }
+.tblBody { display: flex; flex-direction: column; background: var(--tbl-body-bg, #fff); border: 0.5px solid var(--tbl-line, #e6e8ec); border-radius: 12px 12px 0 0; margin: 0 -0.5px -0.5px; }
+.tblRow { display: flex; }
+.tblRow:not(:last-child) { border-bottom: 0.5px solid var(--tbl-line, #e6e8ec); }
+.tblCell { flex: 1 1 0; min-width: 0; padding: 9px 12px; display: flex; align-items: center; color: var(--tbl-cell, #1a1a1a); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tblCell:not(:last-child) { border-right: 0.5px solid var(--tbl-line, #e6e8ec); }
+/* text-overflow:ellipsis has no effect on a flex container's raw text, so the
+   label lives in this shrinkable child instead. */
+.tblCellText { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.modelCell { display: flex; min-width: 0; align-items: center; gap: 6px; }
+.modelIcon { width: 14px; height: 14px; flex: none; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; color: #fff; box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.18); }

@@ -1,0 +1,8 @@
+{
+  "name": "aicss-oss",
+  "private": true,
+  "workspaces": [
+    "packages/react",
+    "packages/cli"
+  ]
+}

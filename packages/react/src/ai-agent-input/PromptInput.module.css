@@ -1,0 +1,684 @@
+/* Theme follows the nearest [data-theme] ancestor (preview switch),
+   then .dark, then the OS when no data-theme is set. */
+:global(:root),
+:global([data-theme="light"]) {
+  --pi-frame-bg: #ffffff;
+  --pi-frame-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.02);
+  --pi-fg: #1a1a1a;
+  --pi-muted: #a1a1a1;
+  --pi-enhance-ring: conic-gradient(
+    from var(--pi-angle),
+    #2b7fff, #8b5cf6, #d946ef, #22d3ee, #2b7fff
+  );
+  --pi-shimmer: linear-gradient(
+    90deg,
+    #1a1a1a 0%, #1a1a1a 30%,
+    rgba(26, 26, 26, 0.45) 45%, rgba(26, 26, 26, 0.45) 55%,
+    #1a1a1a 70%, #1a1a1a 100%
+  );
+  --pi-chip-bg: #ffffff;
+  --pi-chip-border: #e6e8ec;
+  --pi-icon-fill: rgba(26, 26, 26, 0.06);
+  --pi-icon-fill-hover: rgba(26, 26, 26, 0.1);
+  --pi-icon-fill-open: rgba(26, 26, 26, 0.12);
+  --pi-chip-remove-hover: rgba(26, 26, 26, 0.08);
+  --pi-send-fg: #ffffff;
+  --pi-send-bg: #0b0d12;
+  --pi-send-bg-hover: #2a2f3a;
+  --pi-menu-bg: #ffffff;
+  --pi-menu-border: #e6e8ec;
+  --pi-menu-hover: rgba(26, 26, 26, 0.06);
+  --pi-menu-active: rgba(26, 26, 26, 0.09);
+  --pi-skill-bg: rgba(43, 127, 255, 0.12);
+  --pi-skill-fg: #1f6feb;
+}
+:global([data-theme="dark"]),
+:global(.dark) {
+  --pi-frame-bg: #1a1a1a;
+  --pi-frame-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --pi-fg: #f5f5f5;
+  --pi-muted: #a3a3a3;
+  --pi-enhance-ring: conic-gradient(
+    from var(--pi-angle),
+    #3b6fb5, #6b5aa6, #9a4f96, #3a8a9a, #3b6fb5
+  );
+  --pi-shimmer: linear-gradient(
+    90deg,
+    #f5f5f5 0%, #f5f5f5 30%,
+    rgba(245, 245, 245, 0.45) 45%, rgba(245, 245, 245, 0.45) 55%,
+    #f5f5f5 70%, #f5f5f5 100%
+  );
+  --pi-chip-bg: #1a1a1a;
+  --pi-chip-border: #303030;
+  --pi-icon-fill: rgba(245, 245, 245, 0.06);
+  --pi-icon-fill-hover: rgba(245, 245, 245, 0.1);
+  --pi-icon-fill-open: rgba(245, 245, 245, 0.12);
+  --pi-chip-remove-hover: rgba(245, 245, 245, 0.08);
+  --pi-send-fg: #0a0a0a;
+  --pi-send-bg: #f5f5f5;
+  --pi-send-bg-hover: #ffffff;
+  --pi-menu-bg: #1a1a1a;
+  --pi-menu-border: #303030;
+  --pi-menu-hover: rgba(245, 245, 245, 0.06);
+  --pi-menu-active: rgba(245, 245, 245, 0.09);
+  --pi-skill-bg: rgba(43, 127, 255, 0.22);
+  --pi-skill-fg: #9ec5ff;
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) {
+    --pi-frame-bg: #1a1a1a;
+    --pi-frame-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+      0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+    --pi-fg: #f5f5f5;
+    --pi-muted: #a3a3a3;
+    --pi-enhance-ring: conic-gradient(
+      from var(--pi-angle),
+      #3b6fb5, #6b5aa6, #9a4f96, #3a8a9a, #3b6fb5
+    );
+    --pi-shimmer: linear-gradient(
+      90deg,
+      #f5f5f5 0%, #f5f5f5 30%,
+      rgba(245, 245, 245, 0.45) 45%, rgba(245, 245, 245, 0.45) 55%,
+      #f5f5f5 70%, #f5f5f5 100%
+    );
+    --pi-chip-bg: #1a1a1a;
+    --pi-chip-border: #303030;
+    --pi-icon-fill: rgba(245, 245, 245, 0.06);
+    --pi-icon-fill-hover: rgba(245, 245, 245, 0.1);
+    --pi-icon-fill-open: rgba(245, 245, 245, 0.12);
+    --pi-chip-remove-hover: rgba(245, 245, 245, 0.08);
+    --pi-send-fg: #0a0a0a;
+    --pi-send-bg: #f5f5f5;
+    --pi-send-bg-hover: #ffffff;
+    --pi-menu-bg: #1a1a1a;
+    --pi-menu-border: #303030;
+    --pi-menu-hover: rgba(245, 245, 245, 0.06);
+    --pi-menu-active: rgba(245, 245, 245, 0.09);
+    --pi-skill-bg: rgba(43, 127, 255, 0.22);
+    --pi-skill-fg: #9ec5ff;
+  }
+}
+
+.wrap {
+  width: 100%;
+  max-width: 420px;
+  min-width: 0;
+  font-family: "Inter Variable", "Inter", sans-serif;
+}
+
+.frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 10px 10px;
+  background: var(--pi-frame-bg, #ffffff);
+  /* transparent border keeps the box geometry the enhancing ::after relies on;
+     the visible 0.5px hairline + drop shadow match the surrounding cards. */
+  border: 0.5px solid transparent;
+  border-radius: 12px;
+  /* hairline ring first so it paints on top of the drops and stays even on
+     every edge (otherwise the bottom is hidden by the drop shadow) */
+  box-shadow: var(--pi-frame-shadow, 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.02));
+}
+/* with chips present, match the 10px side padding on top */
+.frame:has(.chips) {
+  padding-top: 10px;
+}
+
+/* enhancing: a conic-gradient ring sweeps around the border */
+@property --pi-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.frame[data-enhancing] {
+  border-color: transparent;
+}
+.frame[data-enhancing]::after {
+  content: "";
+  position: absolute;
+  inset: -0.5px;
+  border-radius: 12.5px;
+  /* border + padding-box mask keeps the ring an even 0.75px on every side -
+     the older content-box/padding trick rendered the bottom edge thinner */
+  border: 0.75px solid transparent;
+  background: var(--pi-enhance-ring, conic-gradient(
+      from var(--pi-angle),
+      #2b7fff, #8b5cf6, #d946ef, #22d3ee, #2b7fff
+    ))
+    border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: pi-border-spin 1.1s linear infinite,
+    pi-border-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  pointer-events: none;
+}
+@keyframes pi-border-spin {
+  to { --pi-angle: 360deg; }
+}
+@keyframes pi-border-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* editable field - a contentEditable div so skill pills can flow inline */
+.editorWrap {
+  position: relative;
+}
+.field {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--pi-fg, #1a1a1a);
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.12px;
+  min-height: 18px;
+  max-height: 160px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.field ::selection,
+.field::selection {
+  background: Highlight;
+  color: HighlightText;
+}
+.field ::-moz-selection,
+.field::-moz-selection {
+  background: Highlight;
+  color: HighlightText;
+}
+.field[data-empty]::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--pi-fg, #1a1a1a);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* inline skill pill - Enhance-Prompt dimensions + a blue tint and an × */
+.skillPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  /* shorter than the field's 18px line-height so the pill never expands the
+     line box (middle + 18px height grew the field and jumped the action gap) */
+  height: 16px;
+  padding: 0 0 0 5px;
+  margin: 0 2px;
+  border-radius: 999px;
+  background: var(--pi-skill-bg, rgba(43, 127, 255, 0.12));
+  color: var(--pi-skill-fg, #1f6feb);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.12px;
+  white-space: nowrap;
+  position: relative;
+  top: -1px;
+  vertical-align: baseline;
+  user-select: none;
+}
+/* at the very start of the field: drop the left margin, keep only the right
+   (data-start is set in JS since :first-child ignores leading text nodes) */
+.skillPill[data-start] {
+  margin-left: 0;
+}
+.skillPillLabel {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.skillPillX {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  opacity: 0.65;
+  cursor: pointer;
+  transition: opacity 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.skillPillX:hover {
+  opacity: 1;
+  background: rgba(43, 127, 255, 0.16);
+}
+/* leave the same soft way the enhance pill arrives */
+.skillPill[data-exit] {
+  animation: pi-pill-out 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  pointer-events: none;
+}
+
+/* "/" command palette - same container as the + menu, pinned above the field */
+.slashMenu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 25;
+  width: 200px;
+  padding: 3px;
+  background: var(--pi-menu-bg, #ffffff);
+  border: 0.5px solid var(--pi-menu-border, #e6e8ec);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 1px 1px rgba(0, 0, 0, 0.04);
+  transform-origin: bottom left;
+  animation: pi-menu-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.slashLabel {
+  padding: 3px 7px;
+  font-size: 11px;
+  font-weight: 425;
+  color: var(--pi-muted, #a1a1a1);
+}
+.slashEmpty {
+  padding: 6px 7px;
+  font-size: 11px;
+  color: var(--pi-muted, #a1a1a1);
+}
+
+/* enhancing: the current text shimmers while the model rewrites it */
+.enhancingText {
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.12px;
+  word-break: break-word;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background: var(--pi-shimmer, linear-gradient(
+    90deg,
+    #1a1a1a 0%, #1a1a1a 30%,
+    rgba(26, 26, 26, 0.45) 45%, rgba(26, 26, 26, 0.45) 55%,
+    #1a1a1a 70%, #1a1a1a 100%
+  ));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: pi-shine 2.25s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+}
+@keyframes pi-shine {
+  0%, 18% { background-position: 100% 0; }
+  82%, 100% { background-position: 0% 0; }
+}
+
+/* attachment chips - same white surface + hairline outline as the frame */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  /* tighten only the chips->text gap (frame gap is 12px) without touching the
+     text->button-row gap */
+  margin-bottom: -6px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 3px 4px 3px 5px;
+  border-radius: 999px;
+  background: var(--pi-chip-bg, #ffffff);
+  border: 0.5px solid var(--pi-chip-border, #e6e8ec);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  color: var(--pi-fg, #1a1a1a);
+  font-size: 11px;
+  line-height: 14px;
+  animation: pi-chip-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* leave the same soft fade/scale way the skill pills do */
+.chip[data-exit] {
+  animation: pi-pill-out 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  pointer-events: none;
+}
+.chipIcon {
+  display: inline-flex;
+  flex: none;
+  color: var(--pi-muted, #a1a1a1);
+}
+.chipName {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* pull 2px closer to the filename without changing the icon->text gap */
+  margin-left: -2px;
+  width: 15px;
+  height: 15px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--pi-muted, #a1a1a1);
+  cursor: pointer;
+  transition: background 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chipRemove:hover {
+  background: var(--pi-chip-remove-hover, rgba(26, 26, 26, 0.08));
+  color: var(--pi-fg, #1a1a1a);
+}
+@keyframes pi-chip-in {
+  from { opacity: 0; transform: translateY(4px); filter: blur(2px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.plusWrap {
+  position: relative;
+  display: flex;
+}
+.right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* round soft button.
+   The fill lives on ::before so a press scales only the container (0.98),
+   never the icon on top. */
+.iconBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--pi-fg, #1a1a1a);
+  cursor: pointer;
+}
+.iconBtn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--pi-icon-fill, rgba(26, 26, 26, 0.06));
+  transition: background 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.iconBtn:hover::before {
+  background: var(--pi-icon-fill-hover, rgba(26, 26, 26, 0.1));
+}
+.iconBtn:active::before {
+  transform: scale(0.98);
+}
+/* keep the icon above the (opaque, when active) ::before fill */
+.iconBtn > svg {
+  position: relative;
+}
+
+.plusIcon {
+  position: relative;
+  display: inline-flex;
+  transition: transform 200ms cubic-bezier(0.35, 1.55, 0.65, 1);
+}
+.plus[data-open]::before {
+  background: var(--pi-icon-fill-open, rgba(26, 26, 26, 0.12));
+}
+.plus[data-open] .plusIcon {
+  transform: rotate(45deg);
+}
+
+/* enhance / revert pill - same fill + press behaviour as the icon buttons */
+.pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--pi-fg, #1a1a1a);
+  font-size: 11px;
+  line-height: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  animation: pi-pill-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--pi-icon-fill, rgba(26, 26, 26, 0.06));
+  transition: background 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pill:hover::before {
+  background: var(--pi-icon-fill-hover, rgba(26, 26, 26, 0.1));
+}
+.pill:active::before {
+  transform: scale(0.98);
+}
+@keyframes pi-pill-in {
+  from { opacity: 0; transform: scale(0.96); filter: blur(2px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+/* symmetric exit - mirrors pi-pill-in so the enhance pill (and the inline
+   skill pills) leave the same soft way they arrive */
+@keyframes pi-pill-out {
+  from { opacity: 1; transform: scale(1); filter: blur(0); }
+  to { opacity: 0; transform: scale(0.96); filter: blur(2px); }
+}
+.pill.pillExit {
+  animation: pi-pill-out 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  pointer-events: none;
+}
+
+.send {
+  color: var(--pi-muted, #a1a1a1);
+}
+.send:disabled {
+  cursor: default;
+}
+.send:disabled:active::before {
+  transform: none;
+}
+.sendActive {
+  color: var(--pi-send-fg, #ffffff);
+}
+.sendActive::before {
+  background: var(--pi-send-bg, #0b0d12);
+}
+.sendActive:hover::before {
+  background: var(--pi-send-bg-hover, #2a2f3a);
+}
+
+.spinnerBtn {
+  cursor: default;
+}
+.spinner {
+  position: relative;
+  color: var(--pi-muted, #a1a1a1);
+  animation: pi-spin 0.7s linear infinite;
+}
+@keyframes pi-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* "+" menu - same container style as the input frame */
+.menu {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  width: 180px;
+  padding: 3px;
+  background: var(--pi-menu-bg, #ffffff);
+  border: 0.5px solid var(--pi-menu-border, #e6e8ec);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 1px 1px rgba(0, 0, 0, 0.04);
+  transform-origin: bottom left;
+  animation: pi-menu-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: 26px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--pi-fg, #1a1a1a);
+  font-size: 11px;
+  font-weight: 425;
+  line-height: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.menuItem:hover {
+  background: var(--pi-menu-hover, rgba(26, 26, 26, 0.06));
+}
+.menuItem:active {
+  background: var(--pi-menu-active, rgba(26, 26, 26, 0.09));
+}
+.menuItem.menuItemActive {
+  background: var(--pi-menu-hover, rgba(26, 26, 26, 0.06));
+}
+.slashMenu[data-keyboard] .menuItem:hover {
+  background: transparent;
+}
+.slashMenu[data-keyboard] .menuItem.menuItemActive,
+.slashMenu[data-keyboard] .menuItem.menuItemActive:hover {
+  background: var(--pi-menu-hover, rgba(26, 26, 26, 0.06));
+}
+.wrap svg {
+  stroke-width: 1.5px;
+}
+.menuIcon {
+  display: inline-flex;
+  flex: none;
+  color: var(--pi-muted, #a1a1a1);
+}
+.menuName {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menuCheck {
+  display: inline-flex;
+  flex: none;
+  color: var(--pi-fg, #1a1a1a);
+}
+
+/* Skills - a side flyout that expands from the "Skills" row */
+.menuSub {
+  position: relative;
+}
+.menuChevron {
+  display: inline-flex;
+  flex: none;
+  color: var(--pi-muted, #a1a1a1);
+}
+/* brand marks keep their own colours; ChatGPT is monochrome so it follows text */
+.menuBrand {
+  display: inline-flex;
+  flex: none;
+  color: var(--pi-fg, #1a1a1a);
+}
+.menuFlyout {
+  position: absolute;
+  top: -3px;
+  left: calc(100% + 6px);
+  width: 168px;
+  padding: 3px;
+  background: var(--pi-menu-bg, #ffffff);
+  border: 0.5px solid var(--pi-menu-border, #e6e8ec);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+/* invisible bridge across the 6px gap so the hover doesn't drop when the
+   pointer travels from the row into the flyout */
+.menuFlyout::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -7px;
+  width: 7px;
+}
+
+/* model info popover - a non-interactive card shown on hover to the right */
+.menuPopover {
+  position: absolute;
+  top: -3px;
+  left: calc(100% + 6px);
+  z-index: 30;
+  width: 200px;
+  padding: 10px 12px;
+  background: var(--pi-menu-bg, #ffffff);
+  border: 0.5px solid var(--pi-menu-border, #e6e8ec);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 1px 1px rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+.popoverTitle {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--pi-fg, #1a1a1a);
+}
+.popoverDesc {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 15px;
+  color: var(--pi-muted, #a1a1a1);
+}
+.popoverMeta {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--pi-muted, #a1a1a1);
+}
+.menuDivider {
+  height: 0.5px;
+  margin: 4px -3px;
+  background: var(--pi-menu-border, #e6e8ec);
+}
+.menuLabel {
+  padding: 3px 7px;
+  font-size: 11px;
+  font-weight: 425;
+  color: var(--pi-muted, #a1a1a1);
+}
+@keyframes pi-menu-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); filter: blur(2px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iconBtn::before, .pill::before, .menuItem, .chipRemove, .plusIcon { transition: none; }
+  .chip, .chip[data-exit], .pill, .pill.pillExit, .skillPill[data-exit], .menu, .menuFlyout, .menuPopover, .slashMenu { animation: none; }
+  .enhancingText, .frame[data-enhancing]::after { animation: none; }
+  .spinner { animation-duration: 1.4s; }
+}
