@@ -73,16 +73,26 @@ async function list() {
     process.exitCode = 1;
     return;
   }
-  const rows = (body.components || []).filter((c) => c.tier === "free");
-  if (!rows.length) {
-    note("No free components are listed right now.");
+  const rows = body.components || [];
+  const free = rows.filter((c) => c.tier === "free");
+  const pro = rows.filter((c) => c.tier === "locked");
+  if (!free.length && !pro.length) {
+    note("No components are listed right now.");
     return;
   }
-  note("Free components\n");
-  for (const c of rows) {
-    note(`  ${c.slug.padEnd(22)} ${c.name}`);
+  if (free.length) {
+    note("Free components\n");
+    for (const c of free) {
+      note(`  ${c.slug.padEnd(22)} ${c.name}`);
+    }
   }
-  note(`\nPro components need AICSS_TOKEN. See ${BASE}/pricing`);
+  if (pro.length) {
+    note(`${free.length ? "\n" : ""}Pro components (need AICSS_TOKEN)\n`);
+    for (const c of pro) {
+      note(`  ${c.slug.padEnd(22)} ${c.name}`);
+    }
+  }
+  note(`\nGet a token at ${BASE}/account`);
 }
 
 async function add(slug) {

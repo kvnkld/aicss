@@ -10,7 +10,7 @@ npx @aicss/cli list
 npx @aicss/cli add thinking-state
 npx @aicss/cli add thinking-state --framework vue
 npx @aicss/cli add thinking-state --force
-npx @aicss/cli add file-diff          # requires AICSS_TOKEN
+npx @aicss/cli add image-generation   # requires AICSS_TOKEN
 ```
 
 Existing files are skipped. Use `--force` to overwrite.
