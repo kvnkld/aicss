@@ -22,6 +22,7 @@ npx @aicss/cli add thinking-state --framework vue
 
 ```tsx
 import { ThinkingState } from "@aicss/react/thinking-state";
+import { ImageReveal } from "@aicss/react/image-reveal";
 ```
 
 Free components are on npm. Pro components are not; use `@aicss/cli` with `AICSS_TOKEN` from [your account](https://www.aicss.dev/account).

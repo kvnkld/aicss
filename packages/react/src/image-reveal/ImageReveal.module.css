@@ -1,0 +1,570 @@
+/* Image Reveal - three finishes for a generated still.
+ *
+ * particles  the generating dots become circular samples of the photo
+ * bloom      a luminous haze condenses into sharp focus
+ * spectrum   RGB plates drift, then snap into register
+ *
+ * Theme follows the nearest [data-theme] ancestor, then .dark, then OS. */
+
+:global(:root),
+:global([data-theme="light"]) {
+  --reveal-bg: #ececef;
+  --reveal-dot: #1a1a1a;
+  --reveal-dot-ink: 0.2;
+  --reveal-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+:global([data-theme="dark"]),
+:global(.dark) {
+  --reveal-bg: #1c1c1e;
+  --reveal-dot: #f5f5f5;
+  --reveal-dot-ink: 0.28;
+  --reveal-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) {
+    --reveal-bg: #1c1c1e;
+    --reveal-dot: #f5f5f5;
+    --reveal-dot-ink: 0.28;
+    --reveal-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1),
+      0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.root {
+  --reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --reveal-ease-out: cubic-bezier(0.17, 1, 0.32, 1);
+  --reveal-cols: 10;
+  --reveal-rows: 7;
+  --reveal-dur: 1680ms;
+
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--reveal-bg, #ececef);
+  box-shadow: var(--reveal-shadow);
+  isolation: isolate;
+}
+
+.filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.photo,
+.haze,
+.flare,
+.plates,
+.plate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.photo {
+  opacity: 0;
+  z-index: 2;
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+.cell {
+  position: absolute;
+  left: calc(var(--x) * 100% / var(--reveal-cols));
+  top: calc(var(--y) * 100% / var(--reveal-rows));
+  width: calc(100% / var(--reveal-cols));
+  height: calc(100% / var(--reveal-rows));
+  border-radius: 50%;
+  background: var(--reveal-dot, #1a1a1a);
+  opacity: var(--reveal-dot-ink, 0.2);
+  transform: translate(var(--gx), var(--gy)) scale(0.3);
+  transform-origin: center;
+  will-change: transform, opacity, border-radius;
+  animation: cell-breathe 2.4s var(--reveal-ease) infinite;
+  animation-delay: var(--delay);
+}
+
+/* Generating: the same lattice as Image Processing's dots, authored here
+   as a soft gathered field so any reveal has a shared starting language. */
+@keyframes cell-breathe {
+  0%,
+  100% {
+    opacity: calc(var(--reveal-dot-ink, 0.2) * 0.55);
+    transform: translate(var(--gx), var(--gy)) scale(0.26);
+  }
+  50% {
+    opacity: calc(var(--reveal-dot-ink, 0.2) * 1.15);
+    transform: translate(var(--gx), var(--gy)) scale(0.34);
+  }
+}
+
+/* ── particles ─────────────────────────────────────────────── */
+
+.root[data-variant="particles"][data-phase="revealing"] .cell,
+.root[data-variant="particles"][data-phase="ready"] .cell {
+  animation: particle-land var(--reveal-dur) var(--reveal-ease) both;
+  animation-delay: calc(var(--delay) * 0.35);
+  background-image: var(--reveal-src);
+  background-size: calc(100% * var(--reveal-cols)) calc(100% * var(--reveal-rows));
+  background-position: calc(var(--x) * 100% / (var(--reveal-cols) - 1))
+    calc(var(--y) * 100% / (var(--reveal-rows) - 1));
+  background-repeat: no-repeat;
+  background-color: transparent;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+@keyframes particle-land {
+  0% {
+    opacity: 0.55;
+    border-radius: 50%;
+    filter: blur(0.4px) saturate(0.7);
+    transform: translate(var(--gx), var(--gy)) scale(0.28);
+  }
+  38% {
+    opacity: 1;
+    border-radius: 46%;
+    filter: blur(0.2px) saturate(0.95);
+    transform: translate(calc(var(--gx) * 0.18), calc(var(--gy) * 0.18)) scale(0.72);
+  }
+  72% {
+    opacity: 1;
+    border-radius: 22%;
+    filter: blur(0) saturate(1);
+    transform: translate(0, 0) scale(1.18);
+  }
+  100% {
+    opacity: 1;
+    border-radius: 8%;
+    filter: none;
+    transform: translate(0, 0) scale(1.08);
+  }
+}
+
+.root[data-variant="particles"][data-phase="revealing"] .photo {
+  animation: photo-settle 420ms var(--reveal-ease) both;
+  animation-delay: calc(var(--reveal-dur) - 420ms);
+}
+
+.root[data-variant="particles"][data-phase="ready"] .photo {
+  opacity: 1;
+}
+
+.root[data-variant="particles"][data-phase="ready"] .cell {
+  opacity: 0;
+  animation: none;
+  transition: opacity 280ms var(--reveal-ease);
+}
+
+@keyframes photo-settle {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── bloom ─────────────────────────────────────────────────── */
+
+.haze {
+  z-index: 1;
+  background-image: var(--reveal-src);
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+}
+
+.hazeWarm {
+  filter: blur(42px) brightness(1.7) saturate(1.55) contrast(0.78)
+    sepia(0.28) hue-rotate(-8deg);
+  transform: scale(1.16);
+}
+
+.hazeCool {
+  filter: blur(28px) brightness(1.35) saturate(1.15) contrast(0.9)
+    hue-rotate(18deg);
+  transform: scale(1.08);
+  mix-blend-mode: screen;
+}
+
+.flare {
+  z-index: 3;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 55% 48% at 48% 38%,
+    rgba(255, 248, 236, 0.72) 0%,
+    rgba(255, 214, 170, 0.22) 34%,
+    transparent 68%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.root[data-variant="bloom"][data-phase="revealing"] .cell,
+.root[data-variant="bloom"][data-phase="ready"] .cell {
+  animation: bloom-dissolve 720ms var(--reveal-ease) both;
+  animation-delay: calc(var(--delay) * 0.2);
+}
+
+@keyframes bloom-dissolve {
+  0% {
+    opacity: var(--reveal-dot-ink, 0.2);
+    filter: blur(0);
+    transform: translate(var(--gx), var(--gy)) scale(0.3);
+  }
+  45% {
+    opacity: 0.55;
+    filter: blur(2px);
+    transform: translate(calc(var(--gx) * 0.4), calc(var(--gy) * 0.4)) scale(0.7);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translate(0, 0) scale(1.8);
+  }
+}
+
+.root[data-variant="bloom"][data-phase="revealing"] .hazeWarm {
+  animation: haze-warm var(--reveal-dur) var(--reveal-ease) both;
+}
+
+.root[data-variant="bloom"][data-phase="revealing"] .hazeCool {
+  animation: haze-cool var(--reveal-dur) var(--reveal-ease) both;
+}
+
+.root[data-variant="bloom"][data-phase="revealing"] .flare {
+  animation: flare-breathe var(--reveal-dur) var(--reveal-ease) both;
+}
+
+.root[data-variant="bloom"][data-phase="revealing"] .photo {
+  filter: blur(18px) brightness(1.25) saturate(0.85) contrast(0.88);
+  transform: scale(1.06);
+  mask-image: radial-gradient(
+    circle at 48% 40%,
+    #000 0%,
+    #000 42%,
+    transparent 72%
+  );
+  mask-repeat: no-repeat;
+  mask-position: 48% 40%;
+  mask-size: 0 0;
+  animation: bloom-develop var(--reveal-dur) var(--reveal-ease) both;
+}
+
+.root[data-variant="bloom"][data-phase="ready"] .photo {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  mask-image: none;
+}
+
+.root[data-variant="bloom"][data-phase="ready"] .haze,
+.root[data-variant="bloom"][data-phase="ready"] .flare,
+.root[data-variant="bloom"][data-phase="ready"] .cell {
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes haze-warm {
+  0% {
+    opacity: 0;
+    transform: scale(1.22);
+    filter: blur(52px) brightness(2) saturate(1.8) contrast(0.7) sepia(0.4);
+  }
+  28% {
+    opacity: 0.95;
+    transform: scale(1.12);
+  }
+  70% {
+    opacity: 0.55;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+    filter: blur(18px) brightness(1.1) saturate(1) contrast(1) sepia(0);
+  }
+}
+
+@keyframes haze-cool {
+  0% {
+    opacity: 0;
+    transform: scale(1.14);
+  }
+  22% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes flare-breathe {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  24% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  55% {
+    opacity: 0.35;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes bloom-develop {
+  0% {
+    opacity: 0.35;
+    filter: blur(22px) brightness(1.4) saturate(0.7) contrast(0.8);
+    transform: scale(1.08);
+    mask-size: 0 0;
+  }
+  32% {
+    opacity: 0.85;
+    filter: blur(12px) brightness(1.2) saturate(0.9) contrast(0.9);
+    mask-size: 70% 70%;
+  }
+  68% {
+    opacity: 1;
+    filter: blur(3px) brightness(1.05) saturate(1.05) contrast(1.02);
+    transform: scale(1.015);
+    mask-size: 160% 160%;
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0) brightness(1) saturate(1) contrast(1);
+    transform: scale(1);
+    mask-size: 280% 280%;
+  }
+}
+
+/* ── spectrum ──────────────────────────────────────────────── */
+
+.plates {
+  z-index: 1;
+  background: #070708;
+  opacity: 0;
+}
+
+.plate {
+  --plate-extract: none;
+  background-image: var(--reveal-src);
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: screen;
+  filter: var(--plate-extract);
+}
+
+.root[data-variant="spectrum"][data-phase="revealing"] .cell,
+.root[data-variant="spectrum"][data-phase="ready"] .cell {
+  animation: spectrum-split 640ms var(--reveal-ease) both;
+  animation-delay: calc(var(--delay) * 0.18);
+}
+
+@keyframes spectrum-split {
+  0% {
+    opacity: var(--reveal-dot-ink, 0.2);
+    transform: translate(var(--gx), var(--gy)) scale(0.3);
+    filter: none;
+  }
+  40% {
+    opacity: 0.7;
+    transform: translate(calc(var(--gx) + var(--drift)), var(--gy)) scale(0.55)
+      rotate(8deg);
+    filter: blur(0.6px) saturate(2.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--drift) * 2), calc(var(--gy) * 0.2)) scale(0.15)
+      rotate(18deg);
+    filter: blur(2px);
+  }
+}
+
+.root[data-variant="spectrum"][data-phase="revealing"] .plates {
+  animation: plates-in 180ms linear both;
+}
+
+.root[data-variant="spectrum"][data-phase="revealing"] .plateR {
+  animation: register-r var(--reveal-dur) var(--reveal-ease) both;
+}
+
+.root[data-variant="spectrum"][data-phase="revealing"] .plateG {
+  animation: register-g var(--reveal-dur) var(--reveal-ease) both;
+}
+
+.root[data-variant="spectrum"][data-phase="revealing"] .plateB {
+  animation: register-b var(--reveal-dur) var(--reveal-ease) both;
+}
+
+.root[data-variant="spectrum"][data-phase="revealing"] .photo {
+  animation: spectrum-lock 320ms var(--reveal-ease) both;
+  animation-delay: calc(var(--reveal-dur) - 280ms);
+}
+
+.root[data-variant="spectrum"][data-phase="ready"] .photo {
+  opacity: 1;
+}
+
+.root[data-variant="spectrum"][data-phase="ready"] .plates,
+.root[data-variant="spectrum"][data-phase="ready"] .cell {
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes plates-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes register-r {
+  0% {
+    opacity: 0;
+    transform: translate(-11%, 4%) rotate(-3.4deg) scale(1.12);
+    filter: var(--plate-extract) blur(6px);
+  }
+  36% {
+    opacity: 1;
+    transform: translate(-6%, 2%) rotate(-1.6deg) scale(1.05);
+    filter: var(--plate-extract) blur(2px);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(-0.4%, 0.15%) rotate(-0.15deg) scale(1.01);
+    filter: var(--plate-extract);
+  }
+  88% {
+    transform: translate(0.35%, -0.1%) rotate(0.08deg) scale(1.012);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: var(--plate-extract);
+  }
+}
+
+@keyframes register-g {
+  0% {
+    opacity: 0;
+    transform: translate(3%, -9%) rotate(2.2deg) scale(1.08);
+    filter: var(--plate-extract) blur(5px);
+  }
+  36% {
+    opacity: 1;
+    transform: translate(2%, -4.5%) rotate(1.1deg) scale(1.04);
+    filter: var(--plate-extract) blur(2px);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(0.15%, -0.3%) rotate(0.1deg) scale(1.008);
+    filter: var(--plate-extract);
+  }
+  88% {
+    transform: translate(-0.2%, 0.2%) rotate(-0.06deg) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: var(--plate-extract);
+  }
+}
+
+@keyframes register-b {
+  0% {
+    opacity: 0;
+    transform: translate(10%, 7%) rotate(3.8deg) scale(1.14);
+    filter: var(--plate-extract) blur(7px);
+  }
+  36% {
+    opacity: 1;
+    transform: translate(5.5%, 3.5%) rotate(1.8deg) scale(1.06);
+    filter: var(--plate-extract) blur(2.4px);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(0.35%, 0.2%) rotate(0.18deg) scale(1.01);
+    filter: var(--plate-extract);
+  }
+  88% {
+    transform: translate(-0.25%, -0.15%) rotate(-0.08deg) scale(1.012);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: var(--plate-extract);
+  }
+}
+
+@keyframes spectrum-lock {
+  0% {
+    opacity: 0;
+    filter: contrast(1.08) saturate(1.15);
+  }
+  40% {
+    opacity: 1;
+    filter: contrast(1.12) saturate(1.2) brightness(1.06);
+  }
+  100% {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell,
+  .photo,
+  .haze,
+  .flare,
+  .plates,
+  .plate {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .root[data-phase="ready"] .photo,
+  .root[data-phase="revealing"] .photo {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    mask-image: none;
+  }
+
+  .root[data-phase="ready"] .cell,
+  .root[data-phase="revealing"] .cell,
+  .haze,
+  .flare,
+  .plates {
+    opacity: 0;
+  }
+}

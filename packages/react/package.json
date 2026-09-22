@@ -1,6 +1,6 @@
 {
   "name": "@aicss/react",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "AICSS React UI components for AI agent conversations. Self-contained CSS, no Tailwind required in your app.",
   "type": "module",
   "license": "MIT",
@@ -22,7 +22,8 @@
     "./text-response": "./src/text-response/index.ts",
     "./streaming-text": "./src/streaming-text/index.ts",
     "./code-block": "./src/code-block/index.ts",
-    "./data-table": "./src/data-table/index.ts"
+    "./data-table": "./src/data-table/index.ts",
+    "./image-reveal": "./src/image-reveal/index.ts"
   },
   "peerDependencies": {
     "react": ">=18",
