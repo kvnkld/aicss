@@ -66,10 +66,10 @@ function cells(): Cell[] {
         x,
         y,
         delay: dist * 55,
-        // Pull the generating field toward the centre, in % of the cell.
-        gatherX: ((0.5 - (x + 0.5) / COLS) * COLS * 42 + jx).toFixed(1) + "%",
-        gatherY: ((0.5 - (y + 0.5) / ROWS) * ROWS * 42 + jy).toFixed(1) + "%",
-        drift: (8 + ((x * 5 + y * 3) % 10)).toFixed(1) + "%",
+        // Pull the generating field into a loose cloud, in % of the cell.
+        gatherX: ((0.5 - (x + 0.5) / COLS) * COLS * 74 + jx * 2.4).toFixed(1) + "%",
+        gatherY: ((0.5 - (y + 0.5) / ROWS) * ROWS * 74 + jy * 2.4).toFixed(1) + "%",
+        drift: (12 + ((x * 5 + y * 3) % 14)).toFixed(1) + "%",
       });
     }
   }

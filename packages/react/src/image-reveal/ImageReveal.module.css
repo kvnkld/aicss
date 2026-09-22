@@ -97,10 +97,10 @@
   border-radius: 50%;
   background: var(--reveal-dot, #1a1a1a);
   opacity: var(--reveal-dot-ink, 0.2);
-  transform: translate(var(--gx), var(--gy)) scale(0.3);
+  transform: translate(var(--gx), var(--gy)) scale(0.46);
   transform-origin: center;
   will-change: transform, opacity, border-radius;
-  animation: cell-breathe 2.4s var(--reveal-ease) infinite;
+  animation: cell-breathe 2.15s var(--reveal-ease) infinite;
   animation-delay: var(--delay);
 }
 
@@ -109,12 +109,12 @@
 @keyframes cell-breathe {
   0%,
   100% {
-    opacity: calc(var(--reveal-dot-ink, 0.2) * 0.55);
-    transform: translate(var(--gx), var(--gy)) scale(0.26);
+    opacity: calc(var(--reveal-dot-ink, 0.2) * 0.45);
+    transform: translate(var(--gx), var(--gy)) scale(0.38);
   }
   50% {
-    opacity: calc(var(--reveal-dot-ink, 0.2) * 1.15);
-    transform: translate(var(--gx), var(--gy)) scale(0.34);
+    opacity: calc(var(--reveal-dot-ink, 0.2) * 1.25);
+    transform: translate(var(--gx), var(--gy)) scale(0.56);
   }
 }
 
@@ -138,13 +138,13 @@
     opacity: 0.55;
     border-radius: 50%;
     filter: blur(0.4px) saturate(0.7);
-    transform: translate(var(--gx), var(--gy)) scale(0.28);
+    transform: translate(var(--gx), var(--gy)) scale(0.4);
   }
   38% {
     opacity: 1;
     border-radius: 46%;
     filter: blur(0.2px) saturate(0.95);
-    transform: translate(calc(var(--gx) * 0.18), calc(var(--gy) * 0.18)) scale(0.72);
+    transform: translate(calc(var(--gx) * 0.28), calc(var(--gy) * 0.28)) scale(0.68);
   }
   72% {
     opacity: 1;
@@ -230,12 +230,12 @@
   0% {
     opacity: var(--reveal-dot-ink, 0.2);
     filter: blur(0);
-    transform: translate(var(--gx), var(--gy)) scale(0.3);
+    transform: translate(var(--gx), var(--gy)) scale(0.46);
   }
   45% {
     opacity: 0.55;
     filter: blur(2px);
-    transform: translate(calc(var(--gx) * 0.4), calc(var(--gy) * 0.4)) scale(0.7);
+    transform: translate(calc(var(--gx) * 0.4), calc(var(--gy) * 0.4)) scale(0.78);
   }
   100% {
     opacity: 0;
@@ -391,12 +391,12 @@
 @keyframes spectrum-split {
   0% {
     opacity: var(--reveal-dot-ink, 0.2);
-    transform: translate(var(--gx), var(--gy)) scale(0.3);
+    transform: translate(var(--gx), var(--gy)) scale(0.46);
     filter: none;
   }
   40% {
     opacity: 0.7;
-    transform: translate(calc(var(--gx) + var(--drift)), var(--gy)) scale(0.55)
+    transform: translate(calc(var(--gx) + var(--drift)), var(--gy)) scale(0.6)
       rotate(8deg);
     filter: blur(0.6px) saturate(2.4);
   }
@@ -451,12 +451,12 @@
 @keyframes register-r {
   0% {
     opacity: 0;
-    transform: translate(-11%, 4%) rotate(-3.4deg) scale(1.12);
+    transform: translate(-16%, 6%) rotate(-4.2deg) scale(1.14);
     filter: var(--plate-extract) blur(6px);
   }
   36% {
     opacity: 1;
-    transform: translate(-6%, 2%) rotate(-1.6deg) scale(1.05);
+    transform: translate(-9%, 3%) rotate(-2deg) scale(1.06);
     filter: var(--plate-extract) blur(2px);
   }
   78% {
@@ -477,12 +477,12 @@
 @keyframes register-g {
   0% {
     opacity: 0;
-    transform: translate(3%, -9%) rotate(2.2deg) scale(1.08);
+    transform: translate(5%, -13%) rotate(2.8deg) scale(1.1);
     filter: var(--plate-extract) blur(5px);
   }
   36% {
     opacity: 1;
-    transform: translate(2%, -4.5%) rotate(1.1deg) scale(1.04);
+    transform: translate(3%, -7%) rotate(1.4deg) scale(1.05);
     filter: var(--plate-extract) blur(2px);
   }
   78% {
@@ -503,12 +503,12 @@
 @keyframes register-b {
   0% {
     opacity: 0;
-    transform: translate(10%, 7%) rotate(3.8deg) scale(1.14);
+    transform: translate(15%, 10%) rotate(4.6deg) scale(1.16);
     filter: var(--plate-extract) blur(7px);
   }
   36% {
     opacity: 1;
-    transform: translate(5.5%, 3.5%) rotate(1.8deg) scale(1.06);
+    transform: translate(8%, 5%) rotate(2.2deg) scale(1.07);
     filter: var(--plate-extract) blur(2.4px);
   }
   78% {
