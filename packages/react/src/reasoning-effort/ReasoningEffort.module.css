@@ -1,0 +1,139 @@
+.root {
+  --ss-shell: rgba(230, 230, 232, 0.504);
+  --ss-shell-2: rgba(232, 232, 233, 0.357);
+  --ss-line: rgba(0, 0, 0, 0.084);
+  --ss-label: #1d1d1d;
+  --ss-label-dim: rgba(29, 29, 29, 0.4);
+  --ss-tick: rgba(0, 0, 0, 0.176);
+  --ss-thumb-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+
+  position: relative;
+  width: 224px;
+  height: 52px;
+  user-select: none;
+  touch-action: none;
+  font-family: inherit;
+}
+
+.root[data-theme="dark"] {
+  --ss-shell: rgba(255, 255, 255, 0.07);
+  --ss-shell-2: rgba(255, 255, 255, 0.1);
+  --ss-line: rgba(255, 255, 255, 0.08);
+  --ss-label: #ffffff;
+  --ss-label-dim: rgba(255, 255, 255, 0.4);
+  --ss-tick: rgba(255, 255, 255, 0.256);
+  --ss-thumb-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+}
+
+.shell {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.label {
+  position: absolute;
+  top: 2.5px;
+  z-index: 2;
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.swap {
+  display: flex;
+  gap: 3px;
+  animation: ss-blur-in 180ms ease-out;
+}
+
+@keyframes ss-blur-in {
+  from {
+    filter: blur(2.5px);
+    opacity: 0.35;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swap {
+    animation: none;
+  }
+}
+
+.current {
+  color: var(--ss-label);
+}
+
+.next {
+  color: var(--ss-label-dim);
+}
+
+.track {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 32px;
+  border-radius: 16px;
+  cursor: grab;
+}
+
+.root[data-dragging="true"] .track {
+  cursor: grabbing;
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #006aff, #0059d4);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.16);
+  pointer-events: none;
+}
+
+.thumb {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff, #f5f5f5);
+  box-shadow: var(--ss-thumb-shadow);
+  pointer-events: none;
+}
+
+.tick {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 1.5px;
+  margin-left: -0.75px;
+  border-radius: 1px;
+  background: var(--ss-tick);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.tick[data-active="true"] {
+  background: #66a6ff;
+}
+
+.tick[data-on-thumb="true"] {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.track:focus-visible {
+  outline: 2px solid #006aff;
+  outline-offset: 3px;
+}
