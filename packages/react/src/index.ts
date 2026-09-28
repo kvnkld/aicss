@@ -6,3 +6,4 @@ export * from "./streaming-text";
 export * from "./code-block";
 export * from "./data-table";
 export * from "./reasoning-effort";
+export * from "./message-actions";
