@@ -1,0 +1,455 @@
+.card {
+  --si-fg: #1a1a1a;
+  --si-muted: #a1a1a1;
+  --si-line: rgba(0, 0, 0, 0.08);
+  --si-card: #ffffff;
+  --si-accent: #0b0d12;
+  --si-accent-hover: #2a2f3a;
+  --si-on-accent: #ffffff;
+  --si-bad: #dc2626;
+  --si-stroke: rgba(0, 0, 0, 0.08);
+  --si-stroke-active: rgba(26, 26, 26, 0.72);
+  --si-ring: rgba(26, 26, 26, 0.1);
+  --si-drop:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.02);
+  --si-shadow:
+    0 0 0 0.5px var(--si-stroke),
+    var(--si-drop);
+  --si-shadow-focus:
+    0 0 0 0.5px var(--si-stroke-active),
+    var(--si-drop);
+
+  box-sizing: border-box;
+  width: min(360px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--si-card);
+  color: var(--si-fg);
+  font-family: inherit;
+  text-align: left;
+  box-shadow: var(--si-shadow);
+}
+
+.card *,
+.card *::before,
+.card *::after {
+  box-sizing: border-box;
+}
+
+:global([data-theme="dark"]) .card,
+:global(.dark) .card {
+  --si-fg: #f5f5f5;
+  --si-muted: #a3a3a3;
+  --si-line: rgba(255, 255, 255, 0.12);
+  --si-card: #1a1a1a;
+  --si-accent: #f5f5f5;
+  --si-accent-hover: #ffffff;
+  --si-on-accent: #0a0a0a;
+  --si-bad: #f87171;
+  --si-stroke: rgba(255, 255, 255, 0.14);
+  --si-stroke-active: rgba(255, 255, 255, 0.78);
+  --si-ring: rgba(255, 255, 255, 0.16);
+  --si-drop: 0 1px 2px rgba(0, 0, 0, 0.12);
+  --si-shadow:
+    0 0 0 0.5px var(--si-stroke),
+    var(--si-drop);
+  --si-shadow-focus:
+    0 0 0 0.5px var(--si-stroke-active),
+    var(--si-drop);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) .card {
+    --si-fg: #f5f5f5;
+    --si-muted: #a3a3a3;
+    --si-line: rgba(255, 255, 255, 0.12);
+    --si-card: #1a1a1a;
+    --si-accent: #f5f5f5;
+    --si-accent-hover: #ffffff;
+    --si-on-accent: #0a0a0a;
+    --si-bad: #f87171;
+    --si-stroke: rgba(255, 255, 255, 0.14);
+    --si-stroke-active: rgba(255, 255, 255, 0.78);
+    --si-ring: rgba(255, 255, 255, 0.16);
+    --si-drop: 0 1px 2px rgba(0, 0, 0, 0.12);
+    --si-shadow:
+      0 0 0 0.5px var(--si-stroke),
+      var(--si-drop);
+    --si-shadow-focus:
+      0 0 0 0.5px var(--si-stroke-active),
+      var(--si-drop);
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--si-fg);
+}
+
+.description {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--si-muted);
+}
+
+.phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 2px;
+  padding: 1px 5px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 0.5px var(--si-stroke);
+  color: var(--si-fg);
+  line-height: 16px;
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+
+.flag {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.label {
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--si-fg);
+}
+
+.req {
+  color: var(--si-muted);
+  font-weight: 400;
+}
+
+.control {
+  position: relative;
+  display: block;
+}
+
+.input,
+.cell {
+  margin: 0;
+  border: 0;
+  border-radius: 6px;
+  background: var(--si-card);
+  color: var(--si-fg);
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 16px;
+  outline: none;
+  box-shadow: var(--si-shadow);
+}
+
+.input:focus,
+.cell:focus {
+  box-shadow:
+    0 0 0 0.5px var(--si-stroke-active),
+    0 0 0 2.5px var(--si-ring),
+    var(--si-drop);
+  animation: si-ring-out 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes si-ring-out {
+  from {
+    box-shadow:
+      0 0 0 0.5px var(--si-stroke-active),
+      0 0 0 0.5px var(--si-ring),
+      var(--si-drop);
+  }
+  to {
+    box-shadow:
+      0 0 0 0.5px var(--si-stroke-active),
+      0 0 0 2.5px var(--si-ring),
+      var(--si-drop);
+  }
+}
+
+.input {
+  display: block;
+  width: 100%;
+  height: 28px;
+  padding: 0 8px;
+}
+
+.input[data-secret] {
+  padding-right: 28px;
+}
+
+.input::placeholder {
+  color: var(--si-muted);
+}
+
+.eye {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--si-muted);
+  cursor: pointer;
+}
+
+.eye:hover {
+  background: color-mix(in srgb, var(--si-fg) 6%, transparent);
+  color: var(--si-fg);
+}
+
+.cells {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sep {
+  flex: none;
+  width: 8px;
+  height: 1px;
+  background: var(--si-muted);
+}
+
+.cell {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  text-align: center;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.settled {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+}
+
+.settled .copy {
+  flex: 1;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--si-fg) 6%, transparent);
+  color: var(--si-fg);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+}
+
+.status[data-tone="failed"] {
+  background: color-mix(in srgb, var(--si-bad) 12%, transparent);
+  color: var(--si-bad);
+}
+
+.spin {
+  animation: si-spin 0.7s linear infinite;
+}
+
+@keyframes si-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.primary,
+.ghost,
+.iconBtn {
+  position: relative;
+  z-index: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 16px;
+  cursor: pointer;
+}
+
+.primary::before,
+.ghost::before,
+.iconBtn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 999px;
+  transition:
+    background 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.primary,
+.ghost {
+  padding: 5px 11px;
+}
+
+.primary {
+  color: var(--si-on-accent);
+}
+
+.primary::before {
+  background: var(--si-accent);
+}
+
+.primary:hover:not(:disabled)::before {
+  background: var(--si-accent-hover);
+}
+
+.primary:active:not(:disabled)::before,
+.ghost:active::before,
+.iconBtn:active::before {
+  transform: scale(0.98);
+}
+
+.primary:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.ghost {
+  color: var(--si-fg);
+}
+
+.ghost::before {
+  background: color-mix(in srgb, var(--si-fg) 6%, transparent);
+}
+
+.ghost:hover::before {
+  background: color-mix(in srgb, var(--si-fg) 10%, transparent);
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  color: var(--si-muted);
+}
+
+.iconBtn:hover {
+  color: var(--si-fg);
+}
+
+.iconBtn::before {
+  background: color-mix(in srgb, var(--si-fg) 6%, transparent);
+}
+
+.iconBtn:hover::before {
+  background: color-mix(in srgb, var(--si-fg) 10%, transparent);
+}
+
+.iconBtn svg {
+  position: relative;
+}
+
+.tipHost {
+  display: inline-flex;
+  margin-left: auto;
+}
+
+.tip {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  padding: 4px 5px;
+  border-radius: 6px;
+  background: rgba(29, 29, 29, 0.6);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateY(1px);
+  filter: blur(2px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    filter 0.15s ease;
+}
+
+.tip[data-theme="dark"] {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tip[data-up] {
+  opacity: 1;
+  transform: translateY(0);
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary::before,
+  .ghost::before,
+  .iconBtn::before,
+  .input,
+  .cell,
+  .tip,
+  .spin {
+    transition: none;
+    animation: none;
+  }
+}
