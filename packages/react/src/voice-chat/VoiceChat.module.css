@@ -814,9 +814,11 @@
   stroke: var(--vc-fg);
   stroke-dasharray: 1 1;
   stroke-dashoffset: 1;
+  opacity: 0;
 }
 
 .play[data-playing] .ringFill {
+  opacity: 1;
   animation: vc-ring var(--dur, 2600ms) linear both;
 }
 
