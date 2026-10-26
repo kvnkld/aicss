@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useId,
   useLayoutEffect,
@@ -510,6 +511,8 @@ function clippingBounds(from: HTMLElement) {
   return { top, bottom };
 }
 
+const MENU_MS = 200;
+
 function Select({
   label,
   display,
@@ -522,16 +525,38 @@ function Select({
   children: (close: () => void) => ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [side, setSide] = useState<"down" | "up">("down");
   const hostRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
+  const closeTimer = useRef<number | undefined>(undefined);
   const triggerId = `vc-select-${useId().replace(/:/g, "")}`;
 
-  const set = (next: boolean) => {
-    setOpen(next);
-    onOpenChange(next);
-  };
+  const set = useCallback(
+    (next: boolean) => {
+      window.clearTimeout(closeTimer.current);
+      if (next) {
+        setClosing(false);
+        setOpen(true);
+        onOpenChange(true);
+        return;
+      }
+      setClosing(true);
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      closeTimer.current = window.setTimeout(
+        () => {
+          setOpen(false);
+          setClosing(false);
+          onOpenChange(false);
+        },
+        reduce ? 0 : MENU_MS,
+      );
+    },
+    [onOpenChange],
+  );
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
   useLayoutEffect(() => {
     if (!open || !triggerRef.current || !menuRef.current || !hostRef.current) return;
@@ -544,17 +569,13 @@ function Select({
   }, [open]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || closing) return;
     const onDown = (e: PointerEvent) => {
-      if (hostRef.current && !hostRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        onOpenChange(false);
-      }
+      if (hostRef.current && !hostRef.current.contains(e.target as Node)) set(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      setOpen(false);
-      onOpenChange(false);
+      set(false);
       triggerRef.current?.focus();
     };
     document.addEventListener("pointerdown", onDown);
@@ -563,7 +584,9 @@ function Select({
       document.removeEventListener("pointerdown", onDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open, onOpenChange]);
+  }, [open, closing, set]);
+
+  const expanded = open && !closing;
 
   return (
     <div ref={hostRef} className={s.select}>
@@ -573,15 +596,22 @@ function Select({
         type="button"
         className={s.trigger}
         aria-haspopup="listbox"
-        aria-expanded={open}
+        aria-expanded={expanded}
         aria-label={label}
-        onClick={() => set(!open)}
+        onClick={() => set(!expanded)}
       >
         {display}
         <ChevronIcon />
       </button>
       {open ? (
-        <ul ref={menuRef} className={s.menu} data-side={side} role="listbox" aria-label={label}>
+        <ul
+          ref={menuRef}
+          className={s.menu}
+          data-side={side}
+          data-closing={closing ? "" : undefined}
+          role="listbox"
+          aria-label={label}
+        >
           {children(() => {
             set(false);
             document.getElementById(triggerId)?.focus();

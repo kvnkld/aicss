@@ -683,6 +683,30 @@
   }
 }
 
+/* --vc-ease reversed. */
+.menu[data-closing] {
+  pointer-events: none;
+  animation: vc-menu-out 200ms cubic-bezier(1, 0, 0.68, 0.28) both;
+}
+
+.menu[data-side="up"][data-closing] {
+  animation-name: vc-menu-out-up;
+}
+
+@keyframes vc-menu-out {
+  to {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.96);
+  }
+}
+
+@keyframes vc-menu-out-up {
+  to {
+    opacity: 0;
+    transform: translateY(3px) scale(0.96);
+  }
+}
+
 .option {
   display: flex;
   align-items: center;
