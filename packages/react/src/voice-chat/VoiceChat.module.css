@@ -1,0 +1,1195 @@
+.root {
+  --vc-fg: #1a1a1a;
+  --vc-muted: #a1a1a1;
+  --vc-line: rgba(0, 0, 0, 0.08);
+  --vc-card: #ffffff;
+  --vc-soft: color-mix(in srgb, var(--vc-fg) 5%, transparent);
+  --vc-soft-hover: color-mix(in srgb, var(--vc-fg) 9%, transparent);
+  --vc-soft-on: color-mix(in srgb, var(--vc-fg) 12%, transparent);
+  --vc-end: #ef4444;
+  --vc-end-hover: #dc2626;
+  --vc-agent-1: #66a6ff;
+  --vc-agent-2: #0059d4;
+  --vc-agent-face: #ffffff;
+  --vc-you: #8f8f8f;
+  --vc-tip-bg: #1a1a1a;
+  --vc-tip-fg: #ffffff;
+  --vc-stroke: rgba(0, 0, 0, 0.08);
+  --vc-drop:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.02);
+  --vc-shadow:
+    0 0 0 0.5px var(--vc-stroke),
+    var(--vc-drop);
+  --vc-float:
+    0 0 0 0.5px var(--vc-stroke),
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 3px 8px rgba(0, 0, 0, 0.03),
+    0 8px 20px rgba(0, 0, 0, 0.03);
+  --vc-menu:
+    0 0 0 0.5px var(--vc-stroke),
+    0 1px 1px rgba(0, 0, 0, 0.04),
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 10px 20px rgba(0, 0, 0, 0.05),
+    0 20px 60px rgba(29, 29, 29, 0.04);
+  --vc-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --vc-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  position: relative;
+  box-sizing: border-box;
+  width: min(360px, 100%);
+  margin: 0;
+  border-radius: 25px;
+  background: var(--vc-card);
+  color: var(--vc-fg);
+  font-family: inherit;
+  text-align: left;
+  box-shadow: var(--vc-float);
+  transform-origin: 24px 24px;
+  animation:
+    vc-in 520ms var(--vc-ease) backwards,
+    vc-shadow-in 420ms ease 460ms backwards;
+  transition:
+    box-shadow 160ms ease,
+    clip-path 380ms cubic-bezier(0.65, 0, 0.35, 1),
+    transform 220ms var(--vc-ease),
+    opacity 220ms ease,
+    filter 220ms ease;
+}
+
+.root *,
+.root *::before,
+.root *::after {
+  box-sizing: border-box;
+}
+
+:global([data-theme="dark"]) .root,
+:global(.dark) .root {
+  --vc-fg: #f5f5f5;
+  --vc-muted: #a3a3a3;
+  --vc-line: rgba(255, 255, 255, 0.1);
+  --vc-card: #1a1a1a;
+  --vc-end: #ef4444;
+  --vc-end-hover: #f05252;
+  --vc-agent-1: #73adff;
+  --vc-agent-2: #006aff;
+  --vc-agent-face: #ffffff;
+  --vc-you: #8a8a8a;
+  --vc-tip-bg: #f5f5f5;
+  --vc-tip-fg: #1a1a1a;
+  --vc-stroke: rgba(255, 255, 255, 0.14);
+  --vc-drop: 0 1px 2px rgba(0, 0, 0, 0.12);
+  --vc-float:
+    0 0 0 0.5px var(--vc-stroke),
+    0 1px 2px rgba(0, 0, 0, 0.16),
+    0 4px 12px rgba(0, 0, 0, 0.18),
+    0 10px 24px rgba(0, 0, 0, 0.16);
+  --vc-menu:
+    0 0 0 0.5px var(--vc-stroke),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) .root {
+    --vc-fg: #f5f5f5;
+    --vc-muted: #a3a3a3;
+    --vc-line: rgba(255, 255, 255, 0.1);
+    --vc-card: #1a1a1a;
+    --vc-end: #ef4444;
+    --vc-end-hover: #f05252;
+    --vc-agent-1: #73adff;
+    --vc-agent-2: #006aff;
+    --vc-agent-face: #ffffff;
+    --vc-you: #8a8a8a;
+    --vc-tip-bg: #f5f5f5;
+    --vc-tip-fg: #1a1a1a;
+    --vc-stroke: rgba(255, 255, 255, 0.14);
+    --vc-drop: 0 1px 2px rgba(0, 0, 0, 0.12);
+    --vc-float:
+      0 0 0 0.5px var(--vc-stroke),
+      0 1px 2px rgba(0, 0, 0, 0.16),
+      0 4px 12px rgba(0, 0, 0, 0.18),
+      0 10px 24px rgba(0, 0, 0, 0.16);
+    --vc-menu:
+      0 0 0 0.5px var(--vc-stroke),
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Grows out of the agent: a circle on the left that opens to the right. */
+@keyframes vc-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+    clip-path: inset(-1px calc(100% - 49px) -1px -1px round 25px);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+    clip-path: inset(-1px calc(100% - 49px) -1px -1px round 25px);
+  }
+  100% {
+    clip-path: inset(-1px -1px -1px -1px round 25px);
+  }
+}
+
+/* The clip would cut the soft shadow off hard, so it only blooms once the shape is open. */
+@keyframes vc-shadow-in {
+  from {
+    box-shadow:
+      0 0 0 0.5px var(--vc-stroke),
+      0 0 0 transparent,
+      0 0 0 transparent,
+      0 0 0 transparent;
+  }
+}
+
+.root[data-phase="collapse"],
+.root[data-phase="retract"],
+.root[data-phase="gone"] {
+  box-shadow: 0 0 0 0.5px var(--vc-stroke);
+}
+
+.root[data-phase="collapse"] {
+  clip-path: inset(-1px -1px -1px -1px round 25px);
+}
+
+.root[data-phase="retract"],
+.root[data-phase="gone"] {
+  clip-path: inset(-1px calc(100% - 49px) -1px -1px round 25px);
+}
+
+.root[data-phase="gone"] {
+  opacity: 0;
+  transform: scale(0.6);
+  filter: blur(4px);
+}
+
+/* ------------------------------------------------------------ bar */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 8px;
+}
+
+.fade {
+  transition:
+    opacity 200ms ease,
+    filter 200ms ease,
+    transform 260ms var(--vc-ease);
+}
+
+.root[data-entering] .fade {
+  animation: vc-fade-in 360ms var(--vc-ease) both;
+  animation-delay: calc(150ms + var(--i, 0) * 35ms);
+}
+
+@keyframes vc-fade-in {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateX(-6px);
+  }
+}
+
+/* Leaves right to left, so the agent is the last thing standing. */
+.root[data-phase="retract"] .fade,
+.root[data-phase="gone"] .fade {
+  opacity: 0;
+  filter: blur(2px);
+  transform: translateX(-10px);
+  transition-delay: calc((5 - var(--i, 0)) * 25ms);
+}
+
+.agent {
+  flex: none;
+  display: block;
+  width: 32px;
+  height: 32px;
+  overflow: visible;
+  cursor: default;
+}
+
+.root[data-morph] {
+  animation: vc-shadow-in 420ms ease 380ms backwards;
+}
+
+.root[data-entering]:not([data-morph]) .agent {
+  animation: vc-agent-in 460ms var(--vc-spring) both;
+}
+
+@keyframes vc-agent-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-40deg);
+  }
+}
+
+.meter {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  overflow: hidden;
+  color: var(--vc-muted);
+  -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent);
+  mask-image: linear-gradient(90deg, #000 70%, transparent);
+}
+
+.meter[data-speaker="agent"] {
+  color: var(--vc-fg);
+}
+
+.meter[data-speaker="user"] {
+  color: var(--vc-you);
+}
+
+.bit {
+  flex: none;
+  width: 2px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.4;
+  transition:
+    height 100ms linear,
+    opacity 100ms linear,
+    background-color 200ms ease;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.btn {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--vc-soft);
+  color: var(--vc-fg);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 160ms var(--vc-ease);
+}
+
+.btn:hover {
+  background: var(--vc-soft-hover);
+}
+
+.btn:active {
+  transform: scale(0.92);
+}
+
+.btn[data-on] {
+  background: var(--vc-soft-on);
+}
+
+.end,
+.mic[data-on] {
+  color: #ffffff;
+  background: var(--vc-end);
+}
+
+.end:hover,
+.mic[data-on]:hover {
+  background: var(--vc-end-hover);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--vc-card), 0 0 0 3.5px var(--vc-muted);
+}
+
+.btn svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  overflow: visible;
+}
+
+.tip {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--cue-w, max-content);
+  overflow: hidden;
+  translate: var(--cue-x, 0px) var(--cue-y, 0px);
+  padding: 4px 5px;
+  border-radius: 6px;
+  background: rgba(29, 29, 29, 0.6);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateY(1px);
+  filter: blur(2px);
+  transition:
+    opacity 50ms ease,
+    transform 50ms ease,
+    filter 50ms ease,
+    translate 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tip[data-theme="dark"] {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tip[data-up] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition:
+    opacity 150ms ease 80ms,
+    transform 150ms ease 80ms,
+    filter 150ms ease 80ms,
+    translate 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tip[data-hold] {
+  transition: none;
+}
+
+.tipGauge {
+  position: fixed;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  white-space: nowrap;
+  pointer-events: none;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Gear: two teeth of travel with a little overshoot, so it rests on the same silhouette. */
+.gear {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 560ms var(--vc-spring);
+}
+
+.btn[data-on] .gear {
+  transform: rotate(120deg);
+}
+
+/* Transcript: the dots type while somebody speaks and the panel is closed. */
+.dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.btn[data-typing] .dot {
+  animation: vc-typing 1.1s ease-in-out infinite;
+  animation-delay: calc(var(--d) * 140ms);
+}
+
+.btn[data-pop] .dot {
+  animation: vc-dot-lift 420ms cubic-bezier(0.37, 0, 0.63, 1) both;
+  animation-delay: calc(var(--d) * 60ms);
+}
+
+.btn[data-pop] .bubble {
+  animation: vc-bubble-pop 420ms var(--vc-spring);
+}
+
+.bubble {
+  transform-box: fill-box;
+  transform-origin: 20% 90%;
+}
+
+@keyframes vc-typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(-1.6px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes vc-dot-lift {
+  45% {
+    transform: translateY(-0.8px);
+  }
+}
+
+@keyframes vc-bubble-pop {
+  40% {
+    transform: scale(0.88);
+  }
+}
+
+/* Mic: the slash draws across, the body opens a gap behind it. */
+.slash,
+.slashCut {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+.btn[data-slash="in"] .slash,
+.btn[data-slash="in"] .slashCut {
+  animation: vc-slash-in 320ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.btn[data-slash="out"] .slash,
+.btn[data-slash="out"] .slashCut {
+  animation: vc-slash-out 260ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.btn[data-slash="static"] .slash,
+.btn[data-slash="static"] .slashCut {
+  stroke-dashoffset: 0;
+}
+
+@keyframes vc-slash-in {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes vc-slash-out {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -1;
+  }
+}
+
+.micBody {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.btn[data-slash="in"] .micBody {
+  animation: vc-mic-dip 320ms var(--vc-spring);
+}
+
+@keyframes vc-mic-dip {
+  40% {
+    transform: scale(0.88);
+  }
+}
+
+/* Hang-up: a level handset that gets pressed down once on click, like putting it on the hook. */
+.handset {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: rotate(135deg);
+}
+
+.root[data-phase] .handset {
+  animation: vc-press 420ms var(--vc-ease);
+}
+
+@keyframes vc-press {
+  35% {
+    translate: 0 1.75px;
+    scale: 0.92;
+  }
+}
+
+/* ------------------------------------------------------------ panel */
+
+.panel {
+  overflow: hidden;
+  transition: height 320ms var(--vc-ease);
+}
+
+.panel[data-menu] {
+  overflow: visible;
+}
+
+.panelInner {
+  border-top: 0.5px solid var(--vc-line);
+  animation: vc-swap 260ms var(--vc-ease) both;
+}
+
+@keyframes vc-swap {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(-4px);
+  }
+}
+
+/* ------------------------------------------------------------ settings */
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 14px 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+}
+
+.inputOption {
+  white-space: nowrap;
+}
+
+.triggerText {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rowLabel {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--vc-fg);
+}
+
+.select {
+  position: relative;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  margin: 0;
+  padding: 0 6px 0 9px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--vc-card);
+  color: var(--vc-fg);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--vc-shadow);
+  transition: box-shadow 150ms ease;
+}
+
+.trigger:hover,
+.trigger[aria-expanded="true"] {
+  box-shadow:
+    0 0 0 0.5px color-mix(in srgb, var(--vc-fg) 22%, transparent),
+    var(--vc-drop);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 0.5px color-mix(in srgb, var(--vc-fg) 40%, transparent),
+    0 0 0 2.5px color-mix(in srgb, var(--vc-fg) 10%, transparent);
+}
+
+.chev {
+  width: 12px;
+  height: 12px;
+  color: var(--vc-muted);
+  transition: transform 260ms var(--vc-spring);
+}
+
+.trigger[aria-expanded="true"] .chev {
+  transform: rotate(180deg);
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  z-index: 10;
+  min-width: 168px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border-radius: 12px;
+  background: var(--vc-card);
+  box-shadow: var(--vc-menu);
+  transform-origin: top right;
+  animation: vc-menu-in 200ms var(--vc-ease) both;
+}
+
+.menu[data-side="down"] {
+  top: calc(100% + 4px);
+}
+
+.menu[data-side="up"] {
+  bottom: calc(100% + 4px);
+  transform-origin: bottom right;
+}
+
+@keyframes vc-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.96);
+  }
+}
+
+.menu[data-side="up"] {
+  animation-name: vc-menu-in-up;
+}
+
+@keyframes vc-menu-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(3px) scale(0.96);
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--vc-fg);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 80ms ease;
+}
+
+.option:hover,
+.option:focus-visible {
+  outline: none;
+  background: var(--vc-soft);
+}
+
+.option[aria-selected="true"] {
+  background: color-mix(in srgb, var(--vc-fg) 4%, transparent);
+}
+
+.optionText {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.optionHint {
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 14px;
+  color: var(--vc-muted);
+}
+
+.check {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  color: var(--vc-fg);
+}
+
+.voiceOption {
+  padding-left: 4px;
+}
+
+.play {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--vc-soft);
+  color: var(--vc-fg);
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    transform 160ms var(--vc-ease);
+}
+
+.play:hover {
+  background: var(--vc-soft-on);
+}
+
+.play:active {
+  transform: scale(0.9);
+}
+
+.play svg {
+  width: 10px;
+  height: 10px;
+  overflow: visible;
+}
+
+.playGlyph,
+.pauseGlyph {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 260ms var(--vc-spring),
+    opacity 160ms ease;
+}
+
+.pauseGlyph {
+  opacity: 0;
+  transform: scale(0.4) rotate(-90deg);
+}
+
+.play[data-playing] .playGlyph {
+  opacity: 0;
+  transform: scale(0.4) rotate(90deg);
+}
+
+.play[data-playing] .pauseGlyph {
+  opacity: 1;
+  transform: none;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  width: 24px !important;
+  height: 24px !important;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.ringTrack {
+  stroke: transparent;
+}
+
+.ringFill {
+  stroke: var(--vc-fg);
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+.play[data-playing] .ringFill {
+  animation: vc-ring var(--dur, 2600ms) linear both;
+}
+
+@keyframes vc-ring {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Snapping speed slider: 1×, 1.5×, 2×. */
+.speed {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.speedTrack {
+  position: relative;
+  width: 88px;
+  height: 20px;
+  touch-action: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.speedRail,
+.speedFill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: 999px;
+}
+
+.speedRail {
+  right: 0;
+  background: color-mix(in srgb, var(--vc-fg) 10%, transparent);
+}
+
+.speedFill {
+  background: var(--vc-fg);
+}
+
+.speedTick {
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--vc-fg) 22%, var(--vc-card));
+  transition: background-color 150ms ease;
+}
+
+.speedTick[data-filled] {
+  background: var(--vc-fg);
+}
+
+.speedThumb {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: transform 180ms var(--vc-spring);
+}
+
+.speedTrack:not([data-dragging]) .speedThumb,
+.speedTrack:not([data-dragging]) .speedFill {
+  transition:
+    left 300ms var(--vc-spring),
+    width 300ms var(--vc-spring),
+    transform 180ms var(--vc-spring);
+}
+
+.speedTrack[data-dragging] .speedThumb {
+  transform: scale(1.15);
+}
+
+.speedTrack:focus-visible .speedThumb {
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.2),
+    0 0 0 3px color-mix(in srgb, var(--vc-fg) 14%, transparent);
+}
+
+.speedValue {
+  display: inline-block;
+  min-width: 36px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--vc-fg);
+}
+
+.speedValue span {
+  display: inline-block;
+  animation: vc-num 220ms var(--vc-ease) both;
+}
+
+@keyframes vc-num {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(3px);
+  }
+}
+
+/* ------------------------------------------------------------ transcript */
+
+@property --vc-fade {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* The top fade only appears once earlier lines have scrolled out of view. */
+.transcript {
+  --vc-fade: 0px;
+  max-height: 224px;
+  overflow-y: auto;
+  padding: 12px 14px 14px;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 var(--vc-fade));
+  mask-image: linear-gradient(180deg, transparent, #000 var(--vc-fade));
+  transition: --vc-fade 360ms var(--vc-ease);
+}
+
+.transcript[data-scrolled] {
+  --vc-fade: 28px;
+}
+
+.transcript::-webkit-scrollbar {
+  display: none;
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: vc-swap 260ms var(--vc-ease) both;
+}
+
+.whoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.who {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 14px;
+  color: var(--vc-fg);
+}
+
+.line[data-who="user"] .who {
+  color: var(--vc-you);
+}
+
+.time {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--vc-muted);
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5px;
+  height: 8px;
+  margin-left: 1px;
+  color: var(--vc-muted);
+}
+
+.inputLive {
+  margin-left: 7px;
+}
+
+/* A miniature of the bar's waveform: tiny pills breathing between a dot and a short bar. */
+.live i {
+  display: block;
+  width: 1.5px;
+  height: 1.5px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.5;
+  animation: vc-live 1100ms ease-in-out infinite;
+}
+
+.live i:nth-child(2) {
+  animation-duration: 940ms;
+  animation-delay: -380ms;
+}
+
+.live i:nth-child(3) {
+  animation-duration: 1260ms;
+  animation-delay: -700ms;
+}
+
+.live[data-idle] i {
+  animation: none;
+}
+
+@keyframes vc-live {
+  0%,
+  100% {
+    height: 1.5px;
+    opacity: 0.5;
+  }
+  50% {
+    height: 6px;
+    opacity: 0.9;
+  }
+}
+
+.text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 19px;
+  color: var(--vc-fg);
+}
+
+.word {
+  animation: vc-word 280ms ease both;
+}
+
+@keyframes vc-word {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+
+.empty {
+  margin: 0;
+  padding: 2px 0;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--vc-muted);
+}
+
+/* ------------------------------------------------------------ demo trigger */
+
+.startHost {
+  --vc-fg: #1a1a1a;
+  --vc-muted: #a1a1a1;
+  --vc-card: #ffffff;
+  --vc-stroke: rgba(0, 0, 0, 0.08);
+  --vc-agent-1: #66a6ff;
+  --vc-agent-2: #0059d4;
+  --vc-agent-face: #ffffff;
+  --vc-float:
+    0 0 0 0.5px var(--vc-stroke),
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 3px 8px rgba(0, 0, 0, 0.03),
+    0 8px 20px rgba(0, 0, 0, 0.03);
+  --vc-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+:global([data-theme="dark"]) .startHost,
+:global(.dark) .startHost {
+  --vc-fg: #f5f5f5;
+  --vc-muted: #a3a3a3;
+  --vc-card: #1a1a1a;
+  --vc-stroke: rgba(255, 255, 255, 0.14);
+  --vc-agent-1: #73adff;
+  --vc-agent-2: #006aff;
+  --vc-float:
+    0 0 0 0.5px var(--vc-stroke),
+    0 1px 2px rgba(0, 0, 0, 0.16),
+    0 4px 12px rgba(0, 0, 0, 0.18),
+    0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
+/* Fixed height that fits the tallest panel; the bar sits centred and the open panel grows evenly around the centre. */
+.stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 330px;
+}
+
+/* Same 48px line as the bar, so the pill and the bar share a centre while they morph. */
+.startRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+}
+
+.start {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  margin: 0;
+  padding: 0 14px 0 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: var(--vc-card);
+  color: var(--vc-fg);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--vc-float);
+  animation: vc-shadow-in 420ms ease 300ms backwards;
+  transition: scale 160ms var(--vc-ease);
+}
+
+.start:active {
+  scale: 0.97;
+}
+
+.start:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--vc-float),
+    0 0 0 2.5px color-mix(in srgb, var(--vc-fg) 14%, transparent);
+}
+
+.startAgent {
+  display: block;
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.startAgent svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .root *,
+  .start {
+    animation: none !important;
+    transition: none !important;
+  }
+}

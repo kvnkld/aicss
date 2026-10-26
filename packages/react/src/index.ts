@@ -8,3 +8,4 @@ export * from "./data-table";
 export * from "./reasoning-effort";
 export * from "./message-actions";
 export * from "./secure-input";
+export * from "./voice-chat";
