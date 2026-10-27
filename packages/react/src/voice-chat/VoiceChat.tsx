@@ -19,6 +19,7 @@ export type VoiceChatSpeaker = "agent" | "user";
 export type VoiceChatPanel = "transcript" | "settings";
 export type VoiceChatSpeed = 1 | 1.25 | 1.5 | 2;
 export type VoiceChatEffort = "low" | "medium" | "high" | "xhigh";
+export type VoiceChatAppearance = "solid" | "glass";
 
 export interface VoiceChatVoice {
   id: string;
@@ -183,8 +184,17 @@ const IDLE: AgentSignal = { who: null, level: 0, muted: false };
 // Shared across instances so the pebble keeps its pose when the bar hands off to the start button.
 let spin = 0;
 
-function AgentFace({ signal, className }: { signal?: { current: AgentSignal }; className?: string }) {
+function AgentFace({
+  signal,
+  className,
+  mono = false,
+}: {
+  signal?: { current: AgentSignal };
+  className?: string;
+  mono?: boolean;
+}) {
   const gradId = `vc-agent-${useId().replace(/:/g, "")}`;
+  const maskId = `${gradId}-mask`;
   const bodyRef = useRef<SVGGElement>(null);
   const blobGroupRef = useRef<SVGGElement>(null);
   const blobRef = useRef<SVGPathElement>(null);
@@ -348,6 +358,38 @@ function AgentFace({ signal, className }: { signal?: { current: AgentSignal }; c
     };
   }, [signal]);
 
+  // Mono is a template glyph: the face is punched out of a currentColor pebble.
+  const face = mono ? "#000000" : "var(--vc-agent-face)";
+  const body = (
+    <g ref={bodyRef}>
+      <g ref={blobGroupRef}>
+        <path ref={blobRef} d={blobPath(0, 0)} fill={mono ? "#ffffff" : `url(#${gradId})`} />
+      </g>
+      {EYES.map((x, i) => (
+        <path
+          key={x}
+          ref={(node) => {
+            eyeRefs.current[i] = node;
+          }}
+          d={eyePath(x, EYE_Y, 1, 0)}
+          fill={face}
+          stroke={face}
+          strokeWidth={0}
+          strokeLinejoin="round"
+        />
+      ))}
+      <path
+        ref={mouthRef}
+        d={mouthPath(0, MOUTH_Y, 0, 0.4)}
+        fill={face}
+        stroke={face}
+        strokeWidth={1.4}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  );
+
   return (
     <svg
       ref={svgRef}
@@ -361,39 +403,36 @@ function AgentFace({ signal, className }: { signal?: { current: AgentSignal }; c
       }}
     >
       <defs>
-        <radialGradient id={gradId} cx="0.32" cy="0.26" r="0.9">
-          <stop offset="0" stopColor="var(--vc-agent-1)" />
-          <stop offset="1" stopColor="var(--vc-agent-2)" />
-        </radialGradient>
+        {mono ? (
+          <mask id={maskId} maskUnits="userSpaceOnUse" x="-20" y="-20" width="40" height="40">
+            {body}
+          </mask>
+        ) : (
+          <radialGradient id={gradId} cx="0.32" cy="0.26" r="0.9">
+            <stop offset="0" stopColor="var(--vc-agent-1)" />
+            <stop offset="1" stopColor="var(--vc-agent-2)" />
+          </radialGradient>
+        )}
       </defs>
-      <g ref={bodyRef}>
-        <g ref={blobGroupRef}>
-          <path ref={blobRef} d={blobPath(0, 0)} fill={`url(#${gradId})`} />
-        </g>
-        {EYES.map((x, i) => (
-          <path
-            key={x}
-            ref={(node) => {
-              eyeRefs.current[i] = node;
-            }}
-            d={eyePath(x, EYE_Y, 1, 0)}
-            fill="var(--vc-agent-face)"
-            stroke="var(--vc-agent-face)"
-            strokeWidth={0}
-            strokeLinejoin="round"
-          />
-        ))}
-        <path
-          ref={mouthRef}
-          d={mouthPath(0, MOUTH_Y, 0, 0.4)}
-          fill="var(--vc-agent-face)"
-          stroke="var(--vc-agent-face)"
-          strokeWidth={1.4}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </g>
+      {mono ? <rect x="-20" y="-20" width="40" height="40" fill="currentColor" mask={`url(#${maskId})`} /> : body}
     </svg>
+  );
+}
+
+/** The agent on its own, idle. `mono` draws it as a currentColor template glyph, like a menu bar icon. */
+export function VoiceChatAgent({
+  mono = false,
+  className,
+  style,
+}: {
+  mono?: boolean;
+  className?: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <span className={`${s.agentIcon}${className ? ` ${className}` : ""}`} style={style}>
+      <AgentFace mono={mono} />
+    </span>
   );
 }
 
@@ -1216,6 +1255,8 @@ export interface VoiceChatProps {
   handoff?: boolean;
   /** Grow out of this shape (for example the button that started the call) instead of the agent. */
   morphFrom?: VoiceChatMorph | null;
+  /** `glass` is a translucent material for photos and wallpapers; it needs something colourful behind it. */
+  appearance?: VoiceChatAppearance;
   className?: string;
   style?: CSSProperties;
 }
@@ -1255,6 +1296,7 @@ export function VoiceChat({
   onEnd,
   handoff = false,
   morphFrom = null,
+  appearance = "solid",
   className,
   style,
 }: VoiceChatProps) {
@@ -1459,6 +1501,8 @@ export function VoiceChat({
     const theme = btn.closest("[data-theme]")?.getAttribute("data-theme");
     bubble.dataset.theme =
       theme === "dark" || (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+    if (appearance === "glass") bubble.dataset.appearance = "glass";
+    else delete bubble.dataset.appearance;
     bubble.textContent = tip.label;
     place(!tipOpen.current);
     bubble.dataset.up = "true";
@@ -1470,7 +1514,7 @@ export function VoiceChat({
       window.removeEventListener("scroll", follow, true);
       window.removeEventListener("resize", follow);
     };
-  }, [tip, phase]);
+  }, [tip, phase, appearance]);
 
   const togglePanel = (next: VoiceChatPanel) => {
     if (phase) return;
@@ -1538,6 +1582,7 @@ export function VoiceChat({
       data-phase={phase ?? undefined}
       data-entering={entering ? "" : undefined}
       data-morph={morphing ? "" : undefined}
+      data-appearance={appearance === "glass" ? "glass" : undefined}
       role="group"
       aria-label="Voice chat"
     >

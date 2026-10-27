@@ -1,6 +1,6 @@
 {
   "name": "@aicss/react",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "AICSS React UI components for AI agent conversations. Self-contained CSS, no Tailwind required in your app.",
   "type": "module",
   "license": "MIT",

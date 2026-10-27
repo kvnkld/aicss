@@ -1,6 +1,7 @@
 export {
   VoiceChat,
   VoiceChatLauncher,
+  VoiceChatAgent,
   getVoiceChatMorph,
   VOICE_CHAT_VOICES,
   VOICE_CHAT_LANGUAGES,
@@ -13,6 +14,7 @@ export type {
   VoiceChatPanel,
   VoiceChatSpeed,
   VoiceChatEffort,
+  VoiceChatAppearance,
   VoiceChatVoice,
   VoiceChatInput,
   VoiceChatTurn,
