@@ -1342,6 +1342,31 @@ function clipTo(root: DOMRect, box: DOMRect) {
   return `inset(${box.top - root.top}px ${root.right - box.right}px ${root.bottom - box.bottom}px ${box.left - root.left}px round ${box.height / 2}px)`;
 }
 
+/** Absolute-position styles that put `el` over the viewport rect `r`. */
+function frameOf(el: HTMLElement, r: DOMRect) {
+  const p = el.offsetParent as HTMLElement | null;
+  const positioned = p !== null && getComputedStyle(p).position !== "static";
+  const o = positioned ? p.getBoundingClientRect() : null;
+  const x = o && p ? o.left + p.clientLeft - p.scrollLeft : -window.scrollX;
+  const y = o && p ? o.top + p.clientTop - p.scrollTop : -window.scrollY;
+  return {
+    left: `${r.left - x}px`,
+    top: `${r.top - y}px`,
+    width: `${r.width}px`,
+    height: `${r.height}px`,
+    borderRadius: `${r.height / 2}px`,
+  };
+}
+
+/** The bar's resting shadow, and the bare ring it keeps while a clip would cut the rest off. */
+function shadowsOf(root: HTMLElement) {
+  const css = getComputedStyle(root);
+  return {
+    full: css.getPropertyValue("--vc-float").trim(),
+    ring: `0 0 0 0.5px ${css.getPropertyValue("--vc-stroke").trim() || "transparent"}`,
+  };
+}
+
 /** Moves an element sitting at `at` onto `target`. */
 function placeOn(at: DOMRect, target: DOMRect) {
   const a = centerOf(at);
@@ -1394,6 +1419,7 @@ export function VoiceChat({
 
   const maskId = `vc-mic-${useId().replace(/:/g, "")}`;
   const rootRef = useRef<HTMLDivElement>(null);
+  const haloRef = useRef<HTMLSpanElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const barsRef = useRef<(HTMLSpanElement | null)[]>([]);
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -1429,18 +1455,33 @@ export function VoiceChat({
     const agent = root?.querySelector<SVGSVGElement>("[data-vc-agent]");
     if (!from || !root || !agent) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const start = clipTo(root.getBoundingClientRect(), from.box);
-    const clip = root.animate([{ clipPath: start }, { clipPath: "inset(-1px round 25px)" }], {
-      duration: MORPH_MS,
-      easing: MORPH_EASE,
-    });
+    const box = root.getBoundingClientRect();
+    const { full, ring } = shadowsOf(root);
+    const timing = { duration: MORPH_MS, easing: MORPH_EASE };
+    const clip = root.animate(
+      [
+        { clipPath: clipTo(box, from.box), boxShadow: ring },
+        { clipPath: "inset(-1px round 25px)", boxShadow: ring },
+      ],
+      timing,
+    );
     const fly = agent.animate(
       [{ transform: placeOn(agent.getBoundingClientRect(), from.agent) }, { transform: "none" }],
-      { duration: MORPH_MS, easing: MORPH_EASE },
+      timing,
+    );
+    // The clip would cut the shadow off, so an unclipped twin grows alongside and carries it.
+    const halo = haloRef.current;
+    const grow = halo?.animate(
+      [
+        { ...frameOf(halo, from.box), boxShadow: full, opacity: 0 },
+        { ...frameOf(halo, box), boxShadow: full, opacity: 1 },
+      ],
+      timing,
     );
     return () => {
       clip.cancel();
       fly.cancel();
+      grow?.cancel();
     };
   }, []);
 
@@ -1627,8 +1668,23 @@ export function VoiceChat({
         }
         setPhase("morph");
         const timing = { duration: MORPH_MS, easing: MORPH_EASE, fill: "forwards" } as const;
-        const end = clipTo(root.getBoundingClientRect(), to.box);
-        root.animate([{ clipPath: "inset(-1px round 25px)" }, { clipPath: end }], timing);
+        const box = root.getBoundingClientRect();
+        const { full, ring } = shadowsOf(root);
+        root.animate(
+          [
+            { clipPath: "inset(-1px round 25px)", boxShadow: ring },
+            { clipPath: clipTo(box, to.box), boxShadow: ring },
+          ],
+          timing,
+        );
+        const halo = haloRef.current;
+        halo?.animate(
+          [
+            { ...frameOf(halo, box), boxShadow: full, opacity: 1 },
+            { ...frameOf(halo, to.box), boxShadow: full, opacity: 0 },
+          ],
+          timing,
+        );
         agent.animate([{ transform: "none" }, { transform: placeOn(agent.getBoundingClientRect(), to.agent) }], timing)
           .finished.then(() => onEnd?.(duration), () => {});
       });
@@ -1658,146 +1714,149 @@ export function VoiceChat({
   const hideTip = () => setTip((t) => (t ? { ...t, on: false } : t));
 
   return (
-    <div
-      ref={rootRef}
-      className={`${s.root}${className ? ` ${className}` : ""}`}
-      style={style}
-      data-vc-root=""
-      data-phase={phase ?? undefined}
-      data-entering={entering ? "" : undefined}
-      data-morph={morphing ? "" : undefined}
-      data-appearance={appearance === "glass" ? "glass" : undefined}
-      role="group"
-      aria-label="Voice chat"
-    >
-      <div className={s.bar}>
-        <AgentFace signal={signal} className={s.agent} />
-
-        <div className={`${s.meter} ${s.fade}`} style={fadeStyle(1)} data-speaker={speaker ?? undefined} aria-hidden>
-          {Array.from({ length: BARS }, (_, i) => (
-            <span
-              key={i}
-              className={s.bit}
-              ref={(node) => {
-                barsRef.current[i] = node;
-              }}
-            />
-          ))}
-        </div>
-
-        <div className={s.controls}>
-          <button
-            type="button"
-            className={`${s.btn} ${s.fade}`}
-            style={fadeStyle(2)}
-            data-on={panel === "settings" ? "" : undefined}
-            aria-label="Settings"
-            aria-expanded={panel === "settings"}
-            {...action("settings", "Settings")}
-            onClick={() => {
-              hideTip();
-              togglePanel("settings");
-            }}
-          >
-            <GearIcon />
-          </button>
-          <button
-            type="button"
-            className={`${s.btn} ${s.fade}`}
-            style={fadeStyle(3)}
-            data-on={panel === "transcript" ? "" : undefined}
-            data-typing={speaker && panel !== "transcript" && !pop ? "" : undefined}
-            data-pop={pop ? "" : undefined}
-            aria-label="Transcript"
-            aria-expanded={panel === "transcript"}
-            {...action("transcript", "Transcript")}
-            onClick={() => {
-              hideTip();
-              togglePanel("transcript");
-            }}
-          >
-            <TranscriptIcon maskId={`${maskId}-dots`} />
-          </button>
-          <button
-            type="button"
-            className={`${s.btn} ${s.mic} ${s.fade}`}
-            style={fadeStyle(4)}
-            data-on={muted ? "" : undefined}
-            data-slash={slash}
-            aria-label={muted ? "Unmute microphone" : "Mute microphone"}
-            aria-pressed={muted}
-            {...action("mic", muted ? "Unmute" : "Mute")}
-            onClick={() => {
-              hideTip();
-              toggleMute();
-            }}
-          >
-            <MicIcon maskId={maskId} />
-          </button>
-          <button
-            type="button"
-            className={`${s.btn} ${s.end} ${s.fade}`}
-            style={fadeStyle(5)}
-            aria-label="End call"
-            {...action("end", "Hang up")}
-            onClick={() => {
-              hideTip();
-              hangUp();
-            }}
-          >
-            <HangUpIcon />
-          </button>
-        </div>
-      </div>
-
+    <>
+      {morphing || morphTo ? <span ref={haloRef} className={s.halo} aria-hidden /> : null}
       <div
-        className={s.panel}
-        data-vc-panel=""
-        data-open={panelOpen ? "" : undefined}
-        data-menu={menu ? "" : undefined}
-        style={{ height: panelOpen ? innerH : 0 }}
+        ref={rootRef}
+        className={`${s.root}${className ? ` ${className}` : ""}`}
+        style={style}
+        data-vc-root=""
+        data-phase={phase ?? undefined}
+        data-entering={entering ? "" : undefined}
+        data-morph={morphing ? "" : undefined}
+        data-appearance={appearance === "glass" ? "glass" : undefined}
+        role="group"
+        aria-label="Voice chat"
       >
-        {shown ? (
-          <div key={shown} ref={innerRef} className={s.panelInner}>
-            {shown === "settings" ? (
-              <Settings
-                voices={voices}
-                voice={voice}
-                onVoice={setVoice}
-                speed={speed}
-                onSpeed={setSpeed}
-                effort={effort}
-                onEffort={(v) => {
-                  if (v === effort) return;
-                  setEffort(v);
-                  onEffortChange?.(v);
-                }}
-                languages={languages}
-                language={language}
-                onLanguage={setLanguage}
-                inputs={inputs}
-                input={input}
-                onInput={setInput}
-                inputLive={speaker === "user" && !muted}
-                onMenu={setMenu}
-              />
-            ) : (
-              <Transcript lines={lines} speaker={speaker} userName={userName} agentName={agentName} />
-            )}
-          </div>
-        ) : null}
-      </div>
+        <div className={s.bar}>
+          <AgentFace signal={signal} className={s.agent} />
 
-      {tip
-        ? createPortal(
-            <>
-              <span ref={gaugeRef} className={s.tipGauge} aria-hidden />
-              <div ref={bubbleRef} className={s.tip} aria-hidden />
-            </>,
-            document.body,
-          )
-        : null}
-    </div>
+          <div className={`${s.meter} ${s.fade}`} style={fadeStyle(1)} data-speaker={speaker ?? undefined} aria-hidden>
+            {Array.from({ length: BARS }, (_, i) => (
+              <span
+                key={i}
+                className={s.bit}
+                ref={(node) => {
+                  barsRef.current[i] = node;
+                }}
+              />
+            ))}
+          </div>
+
+          <div className={s.controls}>
+            <button
+              type="button"
+              className={`${s.btn} ${s.fade}`}
+              style={fadeStyle(2)}
+              data-on={panel === "settings" ? "" : undefined}
+              aria-label="Settings"
+              aria-expanded={panel === "settings"}
+              {...action("settings", "Settings")}
+              onClick={() => {
+                hideTip();
+                togglePanel("settings");
+              }}
+            >
+              <GearIcon />
+            </button>
+            <button
+              type="button"
+              className={`${s.btn} ${s.fade}`}
+              style={fadeStyle(3)}
+              data-on={panel === "transcript" ? "" : undefined}
+              data-typing={speaker && panel !== "transcript" && !pop ? "" : undefined}
+              data-pop={pop ? "" : undefined}
+              aria-label="Transcript"
+              aria-expanded={panel === "transcript"}
+              {...action("transcript", "Transcript")}
+              onClick={() => {
+                hideTip();
+                togglePanel("transcript");
+              }}
+            >
+              <TranscriptIcon maskId={`${maskId}-dots`} />
+            </button>
+            <button
+              type="button"
+              className={`${s.btn} ${s.mic} ${s.fade}`}
+              style={fadeStyle(4)}
+              data-on={muted ? "" : undefined}
+              data-slash={slash}
+              aria-label={muted ? "Unmute microphone" : "Mute microphone"}
+              aria-pressed={muted}
+              {...action("mic", muted ? "Unmute" : "Mute")}
+              onClick={() => {
+                hideTip();
+                toggleMute();
+              }}
+            >
+              <MicIcon maskId={maskId} />
+            </button>
+            <button
+              type="button"
+              className={`${s.btn} ${s.end} ${s.fade}`}
+              style={fadeStyle(5)}
+              aria-label="End call"
+              {...action("end", "Hang up")}
+              onClick={() => {
+                hideTip();
+                hangUp();
+              }}
+            >
+              <HangUpIcon />
+            </button>
+          </div>
+        </div>
+
+        <div
+          className={s.panel}
+          data-vc-panel=""
+          data-open={panelOpen ? "" : undefined}
+          data-menu={menu ? "" : undefined}
+          style={{ height: panelOpen ? innerH : 0 }}
+        >
+          {shown ? (
+            <div key={shown} ref={innerRef} className={s.panelInner}>
+              {shown === "settings" ? (
+                <Settings
+                  voices={voices}
+                  voice={voice}
+                  onVoice={setVoice}
+                  speed={speed}
+                  onSpeed={setSpeed}
+                  effort={effort}
+                  onEffort={(v) => {
+                    if (v === effort) return;
+                    setEffort(v);
+                    onEffortChange?.(v);
+                  }}
+                  languages={languages}
+                  language={language}
+                  onLanguage={setLanguage}
+                  inputs={inputs}
+                  input={input}
+                  onInput={setInput}
+                  inputLive={speaker === "user" && !muted}
+                  onMenu={setMenu}
+                />
+              ) : (
+                <Transcript lines={lines} speaker={speaker} userName={userName} agentName={agentName} />
+              )}
+            </div>
+          ) : null}
+        </div>
+
+        {tip
+          ? createPortal(
+              <>
+                <span ref={gaugeRef} className={s.tipGauge} aria-hidden />
+                <div ref={bubbleRef} className={s.tip} aria-hidden />
+              </>,
+              document.body,
+            )
+          : null}
+      </div>
+    </>
   );
 }
 

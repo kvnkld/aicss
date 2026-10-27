@@ -351,8 +351,15 @@
   cursor: default;
 }
 
+/* The halo carries the shadow through the morph, so the bar's own needs no delayed bloom. */
 .root[data-morph] {
-  animation: vc-shadow-in 420ms ease 380ms backwards;
+  animation: none;
+}
+
+.halo {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .root[data-entering]:not([data-morph]) .agent {
