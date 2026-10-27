@@ -1328,6 +1328,9 @@ export interface VoiceChatProps {
 
 const MORPH_MS = 480;
 const MORPH_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
+/** The entrance curve would park a miniature bar on the source shape, so closing gets its own. */
+const UNMORPH_MS = 380;
+const UNMORPH_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
 
 /** Reads the folded bar (the circle around the agent) so a parent can morph out of it. */
 export function getVoiceChatMorph(host: HTMLElement | null): VoiceChatMorph | null {
@@ -1705,7 +1708,7 @@ export function VoiceChat({
           return;
         }
         setPhase("morph");
-        const timing = { duration: MORPH_MS, easing: MORPH_EASE, fill: "forwards" } as const;
+        const timing = { duration: UNMORPH_MS, easing: UNMORPH_EASE, fill: "forwards" } as const;
         const box = root.getBoundingClientRect();
         const seed = within(box, to.box);
         const { halo: surface, bare } = surfaceOf(root);
@@ -1724,7 +1727,8 @@ export function VoiceChat({
         halo?.animate(
           [
             { ...frameOf(halo, box), ...surface, opacity: 1 },
-            { opacity: 1, offset: 0.9 },
+            { opacity: 1, offset: 0.3 },
+            { opacity: 0, offset: 0.75 },
             { ...frameOf(halo, seed), ...surface, opacity: 0 },
           ],
           timing,
