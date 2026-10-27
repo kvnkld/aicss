@@ -12,6 +12,7 @@ export type {
   VoiceChatSpeaker,
   VoiceChatPanel,
   VoiceChatSpeed,
+  VoiceChatEffort,
   VoiceChatVoice,
   VoiceChatInput,
   VoiceChatTurn,

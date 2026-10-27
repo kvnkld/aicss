@@ -18,6 +18,7 @@ import s from "./VoiceChat.module.css";
 export type VoiceChatSpeaker = "agent" | "user";
 export type VoiceChatPanel = "transcript" | "settings";
 export type VoiceChatSpeed = 1 | 1.25 | 1.5 | 2;
+export type VoiceChatEffort = "low" | "medium" | "high" | "xhigh";
 
 export interface VoiceChatVoice {
   id: string;
@@ -71,6 +72,13 @@ export const VOICE_CHAT_INPUTS: VoiceChatInput[] = [
 ];
 
 const SPEEDS: VoiceChatSpeed[] = [1, 1.25, 1.5, 2];
+const EFFORTS: VoiceChatEffort[] = ["low", "medium", "high", "xhigh"];
+const EFFORT_LABELS: Record<VoiceChatEffort, string> = {
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+  xhigh: "Extra High",
+};
 
 const DEMO_SCRIPT: VoiceChatTurn[] = [
   {
@@ -704,24 +712,31 @@ function useVoicePreview() {
 }
 
 /* ---------------------------------------------------------------- *
- * Speed slider (snaps to 1×, 1.25×, 1.5×, 2×)
+ * Step slider (Speed, Reasoning effort)
  * ---------------------------------------------------------------- */
 
-const SPEED_W = 88;
-const SPEED_PAD = 7;
+const SLIDER_W = 88;
+const SLIDER_PAD = 7;
 
-function speedX(index: number) {
-  return SPEED_PAD + (index / (SPEEDS.length - 1)) * (SPEED_W - SPEED_PAD * 2);
+function stepX(index: number, count: number) {
+  return SLIDER_PAD + (index / (count - 1)) * (SLIDER_W - SLIDER_PAD * 2);
 }
 
-function SpeedSlider({
+function StepSlider<T extends string | number>({
+  label,
+  steps,
   value,
+  format,
   onChange,
 }: {
-  value: VoiceChatSpeed;
-  onChange: (v: VoiceChatSpeed) => void;
+  label: string;
+  steps: readonly T[];
+  value: T;
+  format: (v: T) => string;
+  onChange: (v: T) => void;
 }) {
-  const index = SPEEDS.indexOf(value);
+  const index = Math.max(0, steps.indexOf(value));
+  const count = steps.length;
   const [drag, setDragState] = useState<number | null>(null);
   const dragRef = useRef<number | null>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -733,14 +748,14 @@ function SpeedSlider({
 
   const xFrom = (clientX: number) => {
     const r = trackRef.current?.getBoundingClientRect();
-    if (!r) return speedX(index);
-    return Math.min(SPEED_W - SPEED_PAD, Math.max(SPEED_PAD, clientX - r.left));
+    if (!r) return stepX(index, count);
+    return Math.min(SLIDER_W - SLIDER_PAD, Math.max(SLIDER_PAD, clientX - r.left));
   };
 
   const nearest = (x: number) => {
     let best = 0;
-    for (let i = 1; i < SPEEDS.length; i++) {
-      if (Math.abs(speedX(i) - x) < Math.abs(speedX(best) - x)) best = i;
+    for (let i = 1; i < count; i++) {
+      if (Math.abs(stepX(i, count) - x) < Math.abs(stepX(best, count) - x)) best = i;
     }
     return best;
   };
@@ -759,62 +774,62 @@ function SpeedSlider({
     if (dragRef.current === null) return;
     const x = xFrom(e.clientX);
     setDrag(x);
-    const next = SPEEDS[nearest(x)];
+    const next = steps[nearest(x)];
     if (next !== value) onChange(next);
   };
 
   const onUp = () => {
     if (dragRef.current === null) return;
-    onChange(SPEEDS[nearest(dragRef.current)]);
+    onChange(steps[nearest(dragRef.current)]);
     setDrag(null);
   };
 
   const onKey = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     let next = index;
-    if (e.key === "ArrowRight" || e.key === "ArrowUp") next = Math.min(SPEEDS.length - 1, index + 1);
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") next = Math.min(count - 1, index + 1);
     else if (e.key === "ArrowLeft" || e.key === "ArrowDown") next = Math.max(0, index - 1);
     else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = SPEEDS.length - 1;
+    else if (e.key === "End") next = count - 1;
     else return;
     e.preventDefault();
-    onChange(SPEEDS[next]);
+    onChange(steps[next]);
   };
 
-  const x = drag ?? speedX(index);
+  const x = drag ?? stepX(index, count);
 
   return (
-    <div className={s.speed}>
+    <div className={s.slider}>
       <div
         ref={trackRef}
-        className={s.speedTrack}
+        className={s.sliderTrack}
         data-dragging={drag !== null ? "" : undefined}
         role="slider"
         tabIndex={0}
-        aria-label="Speed"
-        aria-valuemin={1}
-        aria-valuemax={2}
-        aria-valuenow={value}
-        aria-valuetext={`${value}x`}
+        aria-label={label}
+        aria-valuemin={0}
+        aria-valuemax={count - 1}
+        aria-valuenow={index}
+        aria-valuetext={format(value)}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={onUp}
         onKeyDown={onKey}
       >
-        <span className={s.speedRail} style={{ left: SPEED_PAD, right: SPEED_PAD }} />
-        <span className={s.speedFill} style={{ left: SPEED_PAD, width: x - SPEED_PAD }} />
-        {SPEEDS.map((v, i) => (
+        <span className={s.sliderRail} style={{ left: SLIDER_PAD, right: SLIDER_PAD }} />
+        <span className={s.sliderFill} style={{ left: SLIDER_PAD, width: x - SLIDER_PAD }} />
+        {steps.map((v, i) => (
           <span
             key={v}
-            className={s.speedTick}
-            data-filled={speedX(i) <= x + 0.5 ? "" : undefined}
-            style={{ left: speedX(i) }}
+            className={s.sliderTick}
+            data-filled={stepX(i, count) <= x + 0.5 ? "" : undefined}
+            style={{ left: stepX(i, count) }}
           />
         ))}
-        <span className={s.speedThumb} style={{ left: x }} />
+        <span className={s.sliderThumb} style={{ left: x }} />
       </div>
-      <span className={s.speedValue} aria-hidden>
-        <span key={value}>{value}×</span>
+      <span className={s.sliderValue} aria-hidden>
+        <span key={value}>{format(value)}</span>
       </span>
     </div>
   );
@@ -885,6 +900,8 @@ function Settings({
   onVoice,
   speed,
   onSpeed,
+  effort,
+  onEffort,
   languages,
   language,
   onLanguage,
@@ -899,6 +916,8 @@ function Settings({
   onVoice: (id: string) => void;
   speed: VoiceChatSpeed;
   onSpeed: (v: VoiceChatSpeed) => void;
+  effort: VoiceChatEffort;
+  onEffort: (v: VoiceChatEffort) => void;
   languages: string[];
   language: string;
   onLanguage: (l: string) => void;
@@ -980,7 +999,17 @@ function Settings({
       </div>
       <div className={s.row}>
         <span className={s.rowLabel}>Speed</span>
-        <SpeedSlider value={speed} onChange={onSpeed} />
+        <StepSlider label="Speed" steps={SPEEDS} value={speed} format={(v) => `${v}×`} onChange={onSpeed} />
+      </div>
+      <div className={s.row}>
+        <span className={s.rowLabel}>Reasoning effort</span>
+        <StepSlider
+          label="Reasoning effort"
+          steps={EFFORTS}
+          value={effort}
+          format={(v) => EFFORT_LABELS[v]}
+          onChange={onEffort}
+        />
       </div>
       <div className={s.row}>
         <span className={s.rowLabel}>Language</span>
@@ -1161,12 +1190,14 @@ export interface VoiceChatProps {
   defaultInput?: string;
   defaultVoice?: string;
   defaultSpeed?: VoiceChatSpeed;
+  defaultEffort?: VoiceChatEffort;
   defaultLanguage?: string;
   defaultPanel?: VoiceChatPanel | null;
   defaultMuted?: boolean;
   /** Demo conversation streamed into the transcript. */
   script?: VoiceChatTurn[];
   onMuteChange?: (muted: boolean) => void;
+  onEffortChange?: (effort: VoiceChatEffort) => void;
   /** Fires after the hang-up animation has finished, with the call length in ms. */
   onEnd?: (durationMs: number) => void;
   /**
@@ -1205,11 +1236,13 @@ export function VoiceChat({
   defaultInput,
   defaultVoice,
   defaultSpeed = 1.25,
+  defaultEffort = "medium",
   defaultLanguage,
   defaultPanel = null,
   defaultMuted = false,
   script = DEMO_SCRIPT,
   onMuteChange,
+  onEffortChange,
   onEnd,
   handoff = false,
   morphFrom = null,
@@ -1222,6 +1255,7 @@ export function VoiceChat({
   const [slash, setSlash] = useState<"none" | "static" | "in" | "out">(defaultMuted ? "static" : "none");
   const [voice, setVoice] = useState(defaultVoice ?? voices[0]?.id ?? "");
   const [speed, setSpeed] = useState<VoiceChatSpeed>(defaultSpeed);
+  const [effort, setEffort] = useState<VoiceChatEffort>(defaultEffort);
   const [language, setLanguage] = useState(defaultLanguage ?? languages[0] ?? "");
   const [input, setInput] = useState(defaultInput ?? inputs[0]?.id ?? "default");
   const [menu, setMenu] = useState(false);
@@ -1588,6 +1622,12 @@ export function VoiceChat({
                 onVoice={setVoice}
                 speed={speed}
                 onSpeed={setSpeed}
+                effort={effort}
+                onEffort={(v) => {
+                  if (v === effort) return;
+                  setEffort(v);
+                  onEffortChange?.(v);
+                }}
                 languages={languages}
                 language={language}
                 onLanguage={setLanguage}

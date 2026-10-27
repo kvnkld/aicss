@@ -853,13 +853,13 @@
 }
 
 /* Snapping speed slider: 1×, 1.5×, 2×. */
-.speed {
+.slider {
   display: inline-flex;
   align-items: center;
   gap: 10px;
 }
 
-.speedTrack {
+.sliderTrack {
   position: relative;
   width: 88px;
   height: 20px;
@@ -868,8 +868,8 @@
   outline: none;
 }
 
-.speedRail,
-.speedFill {
+.sliderRail,
+.sliderFill {
   position: absolute;
   top: 50%;
   left: 0;
@@ -878,16 +878,16 @@
   border-radius: 999px;
 }
 
-.speedRail {
+.sliderRail {
   right: 0;
   background: color-mix(in srgb, var(--vc-fg) 10%, transparent);
 }
 
-.speedFill {
+.sliderFill {
   background: var(--vc-fg);
 }
 
-.speedTick {
+.sliderTick {
   position: absolute;
   top: 50%;
   width: 4px;
@@ -898,11 +898,11 @@
   transition: background-color 150ms ease;
 }
 
-.speedTick[data-filled] {
+.sliderTick[data-filled] {
   background: var(--vc-fg);
 }
 
-.speedThumb {
+.sliderThumb {
   position: absolute;
   top: 50%;
   width: 14px;
@@ -917,27 +917,27 @@
   transition: transform 180ms var(--vc-spring);
 }
 
-.speedTrack:not([data-dragging]) .speedThumb,
-.speedTrack:not([data-dragging]) .speedFill {
+.sliderTrack:not([data-dragging]) .sliderThumb,
+.sliderTrack:not([data-dragging]) .sliderFill {
   transition:
     left 300ms var(--vc-spring),
     width 300ms var(--vc-spring),
     transform 180ms var(--vc-spring);
 }
 
-.speedTrack[data-dragging] .speedThumb {
+.sliderTrack[data-dragging] .sliderThumb {
   transform: scale(1.15);
 }
 
-.speedTrack:focus-visible .speedThumb {
+.sliderTrack:focus-visible .sliderThumb {
   box-shadow:
     0 0 0 0.5px rgba(0, 0, 0, 0.2),
     0 0 0 3px color-mix(in srgb, var(--vc-fg) 14%, transparent);
 }
 
-.speedValue {
+.sliderValue {
   display: inline-block;
-  min-width: 36px;
+  min-width: 62px;
   font-size: 12.5px;
   font-weight: 500;
   line-height: 16px;
@@ -946,7 +946,7 @@
   color: var(--vc-fg);
 }
 
-.speedValue span {
+.sliderValue span {
   display: inline-block;
   animation: vc-num 220ms var(--vc-ease) both;
 }
