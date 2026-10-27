@@ -1695,7 +1695,13 @@ export function VoiceChat({
         </div>
       </div>
 
-      <div className={s.panel} data-vc-panel="" data-menu={menu ? "" : undefined} style={{ height: panelOpen ? innerH : 0 }}>
+      <div
+        className={s.panel}
+        data-vc-panel=""
+        data-open={panelOpen ? "" : undefined}
+        data-menu={menu ? "" : undefined}
+        style={{ height: panelOpen ? innerH : 0 }}
+      >
         {shown ? (
           <div key={shown} ref={innerRef} className={s.panelInner}>
             {shown === "settings" ? (
