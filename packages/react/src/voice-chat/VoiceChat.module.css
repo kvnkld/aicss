@@ -1,5 +1,6 @@
 .root {
   --vc-fg: #1a1a1a;
+  --vc-icon: #444444;
   --vc-muted: #a1a1a1;
   --vc-line: rgba(0, 0, 0, 0.08);
   --vc-card: #ffffff;
@@ -66,6 +67,7 @@
 :global([data-theme="dark"]) .root,
 :global(.dark) .root {
   --vc-fg: #f5f5f5;
+  --vc-icon: var(--vc-fg);
   --vc-muted: #a3a3a3;
   --vc-line: rgba(255, 255, 255, 0.1);
   --vc-card: #1a1a1a;
@@ -93,6 +95,7 @@
 @media (prefers-color-scheme: dark) {
   :global(:root:not([data-theme])) .root:not([data-appearance]) {
     --vc-fg: #f5f5f5;
+    --vc-icon: var(--vc-fg);
     --vc-muted: #a3a3a3;
     --vc-line: rgba(255, 255, 255, 0.1);
     --vc-card: #1a1a1a;
@@ -126,6 +129,7 @@
  */
 .root[data-appearance="glass"] {
   --vc-fg: #ffffff;
+  --vc-icon: var(--vc-fg);
   --vc-muted: rgba(255, 255, 255, 0.6);
   --vc-line: rgba(255, 255, 255, 0.14);
   --vc-card: rgba(255, 255, 255, 0.12);
@@ -436,7 +440,7 @@
   border: 0;
   border-radius: 999px;
   background: var(--vc-soft);
-  color: var(--vc-fg);
+  color: var(--vc-icon);
   font: inherit;
   cursor: pointer;
   transition:
