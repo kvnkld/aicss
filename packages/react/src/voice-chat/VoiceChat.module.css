@@ -169,12 +169,11 @@
   box-shadow: 0 2px 8px rgba(255, 69, 58, 0.3);
 }
 
-/* Nested backdrop blur only sees the bar itself, so menus are near-opaque instead of blurred. */
-.root[data-appearance="glass"] .menu {
-  background: linear-gradient(180deg, rgba(62, 66, 104, 0.97), rgba(46, 50, 84, 0.97));
-  box-shadow:
-    inset 0 0.5px 0 rgba(255, 255, 255, 0.22),
-    var(--vc-menu);
+/* Menus sit in a portal over the page, so this blur takes in the bar and the wallpaper behind. */
+.menu[data-appearance="glass"] {
+  background: rgba(28, 30, 44, 0.42);
+  -webkit-backdrop-filter: blur(28px) saturate(1.8) brightness(0.85);
+  backdrop-filter: blur(28px) saturate(1.8) brightness(0.85);
 }
 
 .root[data-appearance="glass"] .sliderRail {
@@ -732,9 +731,8 @@
 }
 
 .menu {
-  position: absolute;
-  right: 0;
-  z-index: 10;
+  position: fixed;
+  z-index: 2147483000;
   min-width: 168px;
   display: flex;
   flex-direction: column;
@@ -749,12 +747,7 @@
   animation: vc-menu-in 200ms var(--vc-ease) both;
 }
 
-.menu[data-side="down"] {
-  top: calc(100% + 4px);
-}
-
 .menu[data-side="up"] {
-  bottom: calc(100% + 4px);
   transform-origin: bottom right;
 }
 

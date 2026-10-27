@@ -560,6 +560,18 @@ function clippingBounds(from: HTMLElement) {
 
 const MENU_MS = 200;
 
+/** Tokens the menu reads; it lives in a portal, so they are carried over from the bar. */
+const MENU_VARS = [
+  "--vc-fg",
+  "--vc-muted",
+  "--vc-card",
+  "--vc-soft",
+  "--vc-soft-on",
+  "--vc-menu",
+  "--vc-ease",
+  "--vc-spring",
+];
+
 function Select({
   label,
   display,
@@ -574,6 +586,7 @@ function Select({
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [side, setSide] = useState<"down" | "up">("down");
+  const [skin, setSkin] = useState<{ vars: CSSProperties; glass: boolean } | null>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
@@ -584,6 +597,12 @@ function Select({
     (next: boolean) => {
       window.clearTimeout(closeTimer.current);
       if (next) {
+        const root = hostRef.current?.closest<HTMLElement>("[data-vc-root]");
+        if (!root) return;
+        const cs = getComputedStyle(root);
+        const vars: Record<string, string> = { fontFamily: cs.fontFamily };
+        for (const name of MENU_VARS) vars[name] = cs.getPropertyValue(name);
+        setSkin({ vars: vars as CSSProperties, glass: root.dataset.appearance === "glass" });
         setClosing(false);
         setOpen(true);
         onOpenChange(true);
@@ -605,20 +624,40 @@ function Select({
 
   useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
+  // The bar is a backdrop root (its own glass), so a nested menu could never blur what lies
+  // behind it. Rendered into body and pinned to the trigger, its blur sees the real page.
   useLayoutEffect(() => {
-    if (!open || !triggerRef.current || !menuRef.current || !hostRef.current) return;
-    const t = triggerRef.current.getBoundingClientRect();
-    const h = menuRef.current.offsetHeight;
-    const clip = clippingBounds(hostRef.current);
-    const below = clip.bottom - t.bottom - 10;
-    const above = t.top - clip.top - 10;
-    setSide(h <= below || below >= above ? "down" : "up");
-  }, [open]);
+    if (!open || !skin) return;
+    const place = () => {
+      const trigger = triggerRef.current;
+      const menu = menuRef.current;
+      const host = hostRef.current;
+      if (!trigger || !menu || !host) return;
+      const t = trigger.getBoundingClientRect();
+      const clip = clippingBounds(host);
+      const below = clip.bottom - t.bottom - 10;
+      const above = t.top - clip.top - 10;
+      const down = menu.offsetHeight <= below || below >= above;
+      setSide(down ? "down" : "up");
+      menu.style.right = `${document.documentElement.clientWidth - t.right}px`;
+      menu.style.top = down ? `${t.bottom + 4}px` : "auto";
+      menu.style.bottom = down ? "auto" : `${window.innerHeight - t.top + 4}px`;
+    };
+    place();
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    return () => {
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+    };
+  }, [open, skin]);
 
   useEffect(() => {
     if (!open || closing) return;
     const onDown = (e: PointerEvent) => {
-      if (hostRef.current && !hostRef.current.contains(e.target as Node)) set(false);
+      const target = e.target as Node;
+      if (hostRef.current?.contains(target) || menuRef.current?.contains(target)) return;
+      set(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
@@ -650,21 +689,26 @@ function Select({
         {display}
         <ChevronIcon />
       </button>
-      {open ? (
-        <ul
-          ref={menuRef}
-          className={s.menu}
-          data-side={side}
-          data-closing={closing ? "" : undefined}
-          role="listbox"
-          aria-label={label}
-        >
-          {children(() => {
-            set(false);
-            document.getElementById(triggerId)?.focus();
-          })}
-        </ul>
-      ) : null}
+      {open && skin
+        ? createPortal(
+            <ul
+              ref={menuRef}
+              className={s.menu}
+              style={skin.vars}
+              data-side={side}
+              data-appearance={skin.glass ? "glass" : undefined}
+              data-closing={closing ? "" : undefined}
+              role="listbox"
+              aria-label={label}
+            >
+              {children(() => {
+                set(false);
+                document.getElementById(triggerId)?.focus();
+              })}
+            </ul>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
