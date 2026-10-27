@@ -462,30 +462,40 @@ function Svg({ children, className }: { children: ReactNode; className?: string 
 function GearIcon() {
   return (
     <Svg>
-      <g className={s.gear}>
-        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-        <circle cx="12" cy="12" r="3" />
-      </g>
+      <path
+        className={s.gear}
+        fill="currentColor"
+        fillRule="evenodd"
+        strokeWidth={1.2}
+        d="M10.14 4.53 10.31 1.84a10.3 10.3 0 0 1 3.38 0l.17 2.69a7.7 7.7 0 0 1 2.11.87l2.02-1.78a10.3 10.3 0 0 1 2.39 2.39L18.6 8.03a7.7 7.7 0 0 1 .87 2.11l2.69.17a10.3 10.3 0 0 1 0 3.38l-2.69.17a7.7 7.7 0 0 1-.87 2.11l1.78 2.02a10.3 10.3 0 0 1-2.39 2.39l-2.02-1.78a7.7 7.7 0 0 1-2.11.87l-.17 2.69a10.3 10.3 0 0 1-3.38 0l-.17-2.69a7.7 7.7 0 0 1-2.11-.87l-2.02 1.78a10.3 10.3 0 0 1-2.39-2.39l1.78-2.02a7.7 7.7 0 0 1-.87-2.11l-2.69-.17a10.3 10.3 0 0 1 0-3.38l2.69-.17a7.7 7.7 0 0 1 .87-2.11L3.62 6.01a10.3 10.3 0 0 1 2.39-2.39L8.03 5.4a7.7 7.7 0 0 1 2.11-.87ZM15.2 12a3.2 3.2 0 1 1-6.4 0 3.2 3.2 0 0 1 6.4 0Z"
+      />
     </Svg>
   );
 }
 
-function TranscriptIcon() {
+function TranscriptIcon({ maskId }: { maskId: string }) {
   return (
     <Svg>
-      <path className={s.bubble} d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-      {[8, 12, 16].map((x, i) => (
-        <circle
-          key={x}
-          className={s.dot}
-          cx={x}
-          cy="12"
-          r="1.15"
-          fill="currentColor"
-          stroke="none"
-          style={{ "--d": i } as CSSProperties}
-        />
-      ))}
+      <defs>
+        <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+          <rect width="24" height="24" fill="#fff" stroke="none" />
+          {[8, 12, 16].map((x, i) => (
+            <circle
+              key={x}
+              className={s.dot}
+              cx={x}
+              cy="12"
+              r="1.35"
+              fill="#000"
+              stroke="none"
+              style={{ "--d": i } as CSSProperties}
+            />
+          ))}
+        </mask>
+      </defs>
+      <g mask={`url(#${maskId})`}>
+        <path className={s.bubble} d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" fill="currentColor" />
+      </g>
     </Svg>
   );
 }
@@ -502,7 +512,7 @@ function MicIcon({ maskId }: { maskId: string }) {
       </defs>
       <g mask={`url(#${maskId})`}>
         <g className={s.micBody}>
-          <path d="M12 2.75a3 3 0 0 0-3 3V12a3 3 0 0 0 6 0V5.75a3 3 0 0 0-3-3Z" />
+          <path d="M12 2.75a3 3 0 0 0-3 3V12a3 3 0 0 0 6 0V5.75a3 3 0 0 0-3-3Z" fill="currentColor" />
           <path d="M18.5 10.5v1.25a6.5 6.5 0 0 1-13 0V10.5" />
           <path d="M12 18.25v3" />
         </g>
@@ -517,6 +527,7 @@ function HangUpIcon() {
     <Svg>
       <path
         className={s.handset}
+        fill="currentColor"
         d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
       />
     </Svg>
@@ -1705,7 +1716,7 @@ export function VoiceChat({
               togglePanel("transcript");
             }}
           >
-            <TranscriptIcon />
+            <TranscriptIcon maskId={`${maskId}-dots`} />
           </button>
           <button
             type="button"
