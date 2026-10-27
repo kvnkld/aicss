@@ -798,40 +798,43 @@ function StepSlider<T extends string | number>({
   const x = drag ?? stepX(index, count);
 
   return (
-    <div className={s.slider}>
-      <div
-        ref={trackRef}
-        className={s.sliderTrack}
-        data-dragging={drag !== null ? "" : undefined}
-        role="slider"
-        tabIndex={0}
-        aria-label={label}
-        aria-valuemin={0}
-        aria-valuemax={count - 1}
-        aria-valuenow={index}
-        aria-valuetext={format(value)}
-        onPointerDown={onDown}
-        onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerCancel={onUp}
-        onKeyDown={onKey}
-      >
-        <span className={s.sliderRail} style={{ left: SLIDER_PAD, right: SLIDER_PAD }} />
-        <span className={s.sliderFill} style={{ left: SLIDER_PAD, width: x - SLIDER_PAD }} />
-        {steps.map((v, i) => (
-          <span
-            key={v}
-            className={s.sliderTick}
-            data-filled={stepX(i, count) <= x + 0.5 ? "" : undefined}
-            style={{ left: stepX(i, count) }}
-          />
-        ))}
-        <span className={s.sliderThumb} style={{ left: x }} />
-      </div>
-      <span className={s.sliderValue} aria-hidden>
-        <span key={value}>{format(value)}</span>
-      </span>
+    <div
+      ref={trackRef}
+      className={s.sliderTrack}
+      data-dragging={drag !== null ? "" : undefined}
+      role="slider"
+      tabIndex={0}
+      aria-label={label}
+      aria-valuemin={0}
+      aria-valuemax={count - 1}
+      aria-valuenow={index}
+      aria-valuetext={format(value)}
+      onPointerDown={onDown}
+      onPointerMove={onMove}
+      onPointerUp={onUp}
+      onPointerCancel={onUp}
+      onKeyDown={onKey}
+    >
+      <span className={s.sliderRail} style={{ left: SLIDER_PAD, right: SLIDER_PAD }} />
+      <span className={s.sliderFill} style={{ left: SLIDER_PAD, width: x - SLIDER_PAD }} />
+      {steps.map((v, i) => (
+        <span
+          key={v}
+          className={s.sliderTick}
+          data-filled={stepX(i, count) <= x + 0.5 ? "" : undefined}
+          style={{ left: stepX(i, count) }}
+        />
+      ))}
+      <span className={s.sliderThumb} style={{ left: x }} />
     </div>
+  );
+}
+
+function RowValue({ children }: { children: string }) {
+  return (
+    <span className={s.rowValue} aria-hidden>
+      <span key={children}>{children}</span>
+    </span>
   );
 }
 
@@ -998,11 +1001,17 @@ function Settings({
         </Select>
       </div>
       <div className={s.row}>
-        <span className={s.rowLabel}>Speed</span>
+        <span className={s.rowLabel}>
+          Speed:
+          <RowValue>{`${speed}×`}</RowValue>
+        </span>
         <StepSlider label="Speed" steps={SPEEDS} value={speed} format={(v) => `${v}×`} onChange={onSpeed} />
       </div>
       <div className={s.row}>
-        <span className={s.rowLabel}>Reasoning effort</span>
+        <span className={s.rowLabel}>
+          Reasoning effort:
+          <RowValue>{EFFORT_LABELS[effort]}</RowValue>
+        </span>
         <StepSlider
           label="Reasoning effort"
           steps={EFFORTS}

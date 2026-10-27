@@ -852,13 +852,6 @@
   }
 }
 
-/* Snapping speed slider: 1×, 1.5×, 2×. */
-.slider {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .sliderTrack {
   position: relative;
   width: 88px;
@@ -935,18 +928,14 @@
     0 0 0 3px color-mix(in srgb, var(--vc-fg) 14%, transparent);
 }
 
-.sliderValue {
+.rowValue {
   display: inline-block;
-  min-width: 62px;
-  font-size: 12.5px;
-  font-weight: 500;
-  line-height: 16px;
+  margin-left: 5px;
   font-variant-numeric: tabular-nums;
-  text-align: right;
-  color: var(--vc-fg);
+  color: var(--vc-muted);
 }
 
-.sliderValue span {
+.rowValue span {
   display: inline-block;
   animation: vc-num 220ms var(--vc-ease) both;
 }
