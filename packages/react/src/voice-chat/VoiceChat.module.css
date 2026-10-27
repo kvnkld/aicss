@@ -135,6 +135,9 @@
   --vc-end: #ff453a;
   --vc-end-hover: #ff6259;
   --vc-you: rgba(255, 255, 255, 0.72);
+  --vc-agent-1: #ffffff;
+  --vc-agent-2: #c6c9d4;
+  --vc-agent-face: #23263a;
   --vc-stroke: rgba(255, 255, 255, 0.2);
   --vc-drop: 0 1px 2px rgba(0, 0, 0, 0.1);
   --vc-shadow:
@@ -178,6 +181,10 @@
   mask:
     linear-gradient(#000 0 0) content-box exclude,
     linear-gradient(#000 0 0);
+}
+
+.root[data-appearance="glass"] .agent {
+  filter: drop-shadow(0 1px 1.5px rgba(10, 14, 40, 0.22)) drop-shadow(0 3px 8px rgba(10, 14, 40, 0.16));
 }
 
 .root[data-appearance="glass"] .btn {
