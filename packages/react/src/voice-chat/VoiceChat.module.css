@@ -173,10 +173,10 @@
   border-radius: inherit;
   background: linear-gradient(
     165deg,
-    rgba(255, 255, 255, 0.6),
-    rgba(255, 255, 255, 0.16) 28%,
-    rgba(255, 255, 255, 0.06) 52%,
-    rgba(255, 255, 255, 0.22)
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 255, 255, 0.1) 28%,
+    rgba(255, 255, 255, 0.04) 52%,
+    rgba(255, 255, 255, 0.14)
   );
   pointer-events: none;
   -webkit-mask:
@@ -186,6 +186,19 @@
   mask:
     linear-gradient(#000 0 0) content-box exclude,
     linear-gradient(#000 0 0);
+}
+
+/* Same layers as the resting shadow, so hover fades instead of swapping the highlight out. */
+.root[data-appearance="glass"] .trigger {
+  transition: box-shadow 220ms ease;
+}
+
+.root[data-appearance="glass"] .trigger:hover,
+.root[data-appearance="glass"] .trigger[aria-expanded="true"] {
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 0.5px rgba(255, 255, 255, 0.24),
+    var(--vc-drop);
 }
 
 .root[data-appearance="glass"] .btn {
