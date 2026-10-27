@@ -1344,6 +1344,15 @@ function clipTo(root: DOMRect, box: DOMRect) {
   return `inset(${box.top - root.top}px ${root.right - box.right}px ${root.bottom - box.bottom}px ${box.left - root.left}px round ${box.height / 2}px)`;
 }
 
+/** `box` slid inside `root`: outside it the bar paints nothing, and only a clipped sliver of the shape would show. */
+function within(root: DOMRect, box: DOMRect) {
+  const w = Math.min(box.width, root.width);
+  const h = Math.min(box.height, root.height);
+  const x = Math.min(Math.max(box.left, root.left), root.right - w);
+  const y = Math.min(Math.max(box.top, root.top), root.bottom - h);
+  return new DOMRect(x, y, w, h);
+}
+
 /** Absolute-position styles that put `el` over the viewport rect `r`. */
 function frameOf(el: HTMLElement, r: DOMRect) {
   const p = el.offsetParent as HTMLElement | null;
@@ -1360,12 +1369,29 @@ function frameOf(el: HTMLElement, r: DOMRect) {
   };
 }
 
-/** The bar's resting shadow, and the bare ring it keeps while a clip would cut the rest off. */
-function shadowsOf(root: HTMLElement) {
+/**
+ * What the halo borrows from the bar during a morph. A clip cuts a backdrop blur to its bounding box,
+ * not its rounding, so the surface rides on the halo's real geometry and the bar keeps only its content.
+ */
+function surfaceOf(root: HTMLElement) {
   const css = getComputedStyle(root);
+  const ring = `0 0 0 0.5px ${css.getPropertyValue("--vc-stroke").trim() || "transparent"}`;
+  const blur = css.backdropFilter || css.getPropertyValue("-webkit-backdrop-filter") || "none";
   return {
-    full: css.getPropertyValue("--vc-float").trim(),
-    ring: `0 0 0 0.5px ${css.getPropertyValue("--vc-stroke").trim() || "transparent"}`,
+    halo: {
+      boxShadow: css.getPropertyValue("--vc-float").trim(),
+      backgroundColor: css.backgroundColor,
+      backgroundImage: css.backgroundImage,
+      backdropFilter: blur,
+      webkitBackdropFilter: blur,
+    },
+    bare: {
+      boxShadow: ring,
+      backgroundColor: "transparent",
+      backgroundImage: "none",
+      backdropFilter: "none",
+      webkitBackdropFilter: "none",
+    },
   };
 }
 
@@ -1458,12 +1484,13 @@ export function VoiceChat({
     if (!from || !root || !agent) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const box = root.getBoundingClientRect();
-    const { full, ring } = shadowsOf(root);
+    const seed = within(box, from.box);
+    const { halo: surface, bare } = surfaceOf(root);
     const timing = { duration: MORPH_MS, easing: MORPH_EASE };
     const clip = root.animate(
       [
-        { clipPath: clipTo(box, from.box), boxShadow: ring },
-        { clipPath: "inset(-1px round 25px)", boxShadow: ring },
+        { clipPath: clipTo(box, seed), ...bare },
+        { clipPath: "inset(-1px round 25px)", ...bare },
       ],
       timing,
     );
@@ -1471,18 +1498,24 @@ export function VoiceChat({
       [{ transform: placeOn(agent.getBoundingClientRect(), from.agent) }, { transform: "none" }],
       timing,
     );
-    // The clip would cut the shadow off, so an unclipped twin grows alongside and carries it.
+    // The rim hugs the bar's real edge, which the growing shape doesn't share until the end.
+    const rim = root.animate([{ opacity: 0 }, { opacity: 0, offset: 0.85 }, { opacity: 1 }], {
+      ...timing,
+      pseudoElement: "::after",
+    });
+    // An unclipped twin grows alongside and carries the surface and shadow the clip would cut off.
     const halo = haloRef.current;
     const grow = halo?.animate(
       [
-        { ...frameOf(halo, from.box), boxShadow: full, opacity: 0 },
-        { ...frameOf(halo, box), boxShadow: full, opacity: 1 },
+        { ...frameOf(halo, seed), ...surface, opacity: 0 },
+        { ...frameOf(halo, box), ...surface, opacity: 1 },
       ],
       timing,
     );
     return () => {
       clip.cancel();
       fly.cancel();
+      rim.cancel();
       grow?.cancel();
     };
   }, []);
@@ -1671,19 +1704,25 @@ export function VoiceChat({
         setPhase("morph");
         const timing = { duration: MORPH_MS, easing: MORPH_EASE, fill: "forwards" } as const;
         const box = root.getBoundingClientRect();
-        const { full, ring } = shadowsOf(root);
+        const seed = within(box, to.box);
+        const { halo: surface, bare } = surfaceOf(root);
         root.animate(
           [
-            { clipPath: "inset(-1px round 25px)", boxShadow: ring },
-            { clipPath: clipTo(box, to.box), boxShadow: ring },
+            { clipPath: "inset(-1px round 25px)", ...bare },
+            { clipPath: clipTo(box, seed), ...bare },
           ],
           timing,
         );
+        root.animate([{ opacity: 1 }, { opacity: 0, offset: 0.15 }, { opacity: 0 }], {
+          ...timing,
+          pseudoElement: "::after",
+        });
         const halo = haloRef.current;
         halo?.animate(
           [
-            { ...frameOf(halo, box), boxShadow: full, opacity: 1 },
-            { ...frameOf(halo, to.box), boxShadow: full, opacity: 0 },
+            { ...frameOf(halo, box), ...surface, opacity: 1 },
+            { opacity: 1, offset: 0.9 },
+            { ...frameOf(halo, seed), ...surface, opacity: 0 },
           ],
           timing,
         );
