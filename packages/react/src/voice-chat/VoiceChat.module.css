@@ -138,9 +138,12 @@
   --vc-agent-1: #ffffff;
   --vc-agent-2: #c6c9d4;
   --vc-agent-face: #23263a;
-  --vc-stroke: rgba(255, 255, 255, 0.16);
+  --vc-stroke: transparent;
   --vc-drop: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --vc-shadow: none;
+  --vc-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 0.5px rgba(255, 255, 255, 0.12),
+    var(--vc-drop);
   --vc-float:
     0 0 0 0.5px var(--vc-stroke),
     0 1px 2px rgba(0, 0, 0, 0.06),
@@ -160,18 +163,52 @@
   filter: drop-shadow(0 1px 1.5px rgba(10, 14, 40, 0.22)) drop-shadow(0 3px 8px rgba(10, 14, 40, 0.16));
 }
 
+/* One device pixel wide, so the rim stays sharp instead of smearing into a second line. */
+.root[data-appearance="glass"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0.5px;
+  border-radius: inherit;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.16) 28%,
+    rgba(255, 255, 255, 0.06) 52%,
+    rgba(255, 255, 255, 0.22)
+  );
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
 .root[data-appearance="glass"] .btn {
-  box-shadow: none;
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.32),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
 }
 
 .root[data-appearance="glass"] .end,
 .root[data-appearance="glass"] .mic[data-on] {
-  box-shadow: 0 2px 8px rgba(255, 69, 58, 0.3);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.45),
+    0 2px 8px rgba(255, 69, 58, 0.3);
 }
 
 /* Menus sit in a portal over the page, so this blur takes in the bar and the wallpaper behind. */
 .menu[data-appearance="glass"] {
   background: rgba(28, 30, 44, 0.42);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.28),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.14),
+    0 18px 44px rgba(0, 0, 0, 0.28);
   -webkit-backdrop-filter: blur(28px) saturate(1.8) brightness(0.85);
   backdrop-filter: blur(28px) saturate(1.8) brightness(0.85);
 }
