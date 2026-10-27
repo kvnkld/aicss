@@ -1218,7 +1218,7 @@ function Transcript({
  * Voice Chat
  * ---------------------------------------------------------------- */
 
-type Phase = "collapse" | "retract" | "gone";
+type Phase = "collapse" | "retract" | "gone" | "morph";
 
 /** Where a shared-layout morph starts or ends: the outer shape and the agent avatar, in viewport px. */
 export interface VoiceChatMorph {
@@ -1255,6 +1255,11 @@ export interface VoiceChatProps {
   handoff?: boolean;
   /** Grow out of this shape (for example the button that started the call) instead of the agent. */
   morphFrom?: VoiceChatMorph | null;
+  /**
+   * On hang-up, shrink back into this shape (the reverse of `morphFrom`), then fire `onEnd`.
+   * Read when the call ends, so it can follow layout changes.
+   */
+  morphTo?: () => VoiceChatMorph | null;
   /** `glass` is a translucent material for photos and wallpapers; it needs something colourful behind it. */
   appearance?: VoiceChatAppearance;
   className?: string;
@@ -1277,6 +1282,18 @@ function centerOf(r: DOMRect) {
   return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 }
 
+/** A clip that cuts `root` down to the shape `box`. */
+function clipTo(root: DOMRect, box: DOMRect) {
+  return `inset(${box.top - root.top}px ${root.right - box.right}px ${root.bottom - box.bottom}px ${box.left - root.left}px round ${box.height / 2}px)`;
+}
+
+/** Moves an element sitting at `at` onto `target`. */
+function placeOn(at: DOMRect, target: DOMRect) {
+  const a = centerOf(at);
+  const t = centerOf(target);
+  return `translate(${t.x - a.x}px, ${t.y - a.y}px) scale(${target.width / at.width})`;
+}
+
 export function VoiceChat({
   userName = "You",
   agentName = "Agent",
@@ -1296,6 +1313,7 @@ export function VoiceChat({
   onEnd,
   handoff = false,
   morphFrom = null,
+  morphTo,
   appearance = "solid",
   className,
   style,
@@ -1356,21 +1374,13 @@ export function VoiceChat({
     const agent = root?.querySelector<SVGSVGElement>("[data-vc-agent]");
     if (!from || !root || !agent) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const r = root.getBoundingClientRect();
-    const b = from.box;
-    const start = `inset(${b.top - r.top}px ${r.right - b.right}px ${r.bottom - b.bottom}px ${b.left - r.left}px round ${b.height / 2}px)`;
-    const a = agent.getBoundingClientRect();
-    const fromC = centerOf(from.agent);
-    const toC = centerOf(a);
+    const start = clipTo(root.getBoundingClientRect(), from.box);
     const clip = root.animate([{ clipPath: start }, { clipPath: "inset(-1px round 25px)" }], {
       duration: MORPH_MS,
       easing: MORPH_EASE,
     });
     const fly = agent.animate(
-      [
-        { transform: `translate(${fromC.x - toC.x}px, ${fromC.y - toC.y}px) scale(${from.agent.width / a.width})` },
-        { transform: "none" },
-      ],
+      [{ transform: placeOn(agent.getBoundingClientRect(), from.agent) }, { transform: "none" }],
       { duration: MORPH_MS, easing: MORPH_EASE },
     );
     return () => {
@@ -1550,6 +1560,25 @@ export function VoiceChat({
     setPhase("collapse");
     speakerRef.current = null;
     const at = (ms: number, fn: () => void) => timers.current.push(window.setTimeout(fn, ms));
+    if (morphTo && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // The entrance in reverse: once the panel is shut, the bar clips down into the source shape.
+      at(hadPanel ? 280 : 0, () => {
+        const to = morphTo();
+        const root = rootRef.current;
+        const agent = root?.querySelector<SVGSVGElement>("[data-vc-agent]");
+        if (!to || !root || !agent) {
+          onEnd?.(duration);
+          return;
+        }
+        setPhase("morph");
+        const timing = { duration: MORPH_MS, easing: MORPH_EASE, fill: "forwards" } as const;
+        const end = clipTo(root.getBoundingClientRect(), to.box);
+        root.animate([{ clipPath: "inset(-1px round 25px)" }, { clipPath: end }], timing);
+        agent.animate([{ transform: "none" }, { transform: placeOn(agent.getBoundingClientRect(), to.agent) }], timing)
+          .finished.then(() => onEnd?.(duration), () => {});
+      });
+      return;
+    }
     const retract = hadPanel ? 280 : 120;
     at(retract, () => setPhase("retract"));
     if (handoff) {

@@ -256,11 +256,13 @@
 
 .root[data-phase="collapse"],
 .root[data-phase="retract"],
-.root[data-phase="gone"] {
+.root[data-phase="gone"],
+.root[data-phase="morph"] {
   box-shadow: 0 0 0 0.5px var(--vc-stroke);
 }
 
-.root[data-phase="collapse"] {
+.root[data-phase="collapse"],
+.root[data-phase="morph"] {
   clip-path: inset(-1px -1px -1px -1px round 25px);
 }
 
@@ -307,7 +309,8 @@
 
 /* Leaves right to left, so the agent is the last thing standing. */
 .root[data-phase="retract"] .fade,
-.root[data-phase="gone"] .fade {
+.root[data-phase="gone"] .fade,
+.root[data-phase="morph"] .fade {
   opacity: 0;
   filter: blur(2px);
   transform: translateX(-10px);
