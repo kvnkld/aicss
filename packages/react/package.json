@@ -1,6 +1,6 @@
 {
   "name": "@aicss/react",
-  "version": "0.1.29",
+  "version": "0.1.30",
   "description": "AICSS React UI components for AI agent conversations. Self-contained CSS, no Tailwind required in your app.",
   "type": "module",
   "license": "MIT",
@@ -26,7 +26,8 @@
     "./reasoning-effort": "./src/reasoning-effort/index.ts",
     "./message-actions": "./src/message-actions/index.ts",
     "./secure-input": "./src/secure-input/index.ts",
-    "./voice-chat": "./src/voice-chat/index.ts"
+    "./voice-chat": "./src/voice-chat/index.ts",
+    "./ai-bot-avatar": "./src/ai-bot-avatar/index.ts"
   },
   "peerDependencies": {
     "react": ">=18",

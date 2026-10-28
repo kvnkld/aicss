@@ -1,0 +1,79 @@
+.root {
+  --bot-1: #66a6ff;
+  --bot-2: #0059d4;
+  --bot-face: #ffffff;
+  --bot-ground: rgba(0, 0, 0, 0.05);
+  --bot-ground-core: rgba(0, 0, 0, 0.095);
+  --bot-heart: #ff4f7e;
+  --bot-blush: rgba(255, 110, 150, 0.55);
+
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: var(--bot-size, 120px);
+  height: var(--bot-size, 120px);
+  vertical-align: middle;
+}
+
+:global([data-theme="dark"]) .root,
+:global(.dark) .root {
+  --bot-1: #73adff;
+  --bot-2: #006aff;
+  --bot-face: #101010;
+  --bot-ground: rgba(0, 0, 0, 0.2);
+  --bot-ground-core: rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) .root {
+    --bot-1: #73adff;
+    --bot-2: #006aff;
+    --bot-face: #101010;
+    --bot-ground: rgba(0, 0, 0, 0.2);
+    --bot-ground-core: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* The drawing is half again the body's size, so jumps and squashes have room to spill. */
+.svg {
+  position: absolute;
+  inset: -25%;
+  display: block;
+  width: 150%;
+  height: 150%;
+  overflow: visible;
+}
+
+.stop1,
+.stop2 {
+  transition: stop-color 450ms ease;
+}
+
+.stop1 {
+  stop-color: var(--bot-1);
+}
+
+.stop2 {
+  stop-color: var(--bot-2);
+}
+
+.face {
+  fill: var(--bot-face);
+  stroke: var(--bot-face);
+}
+
+.ground {
+  fill: var(--bot-ground);
+}
+
+.core {
+  fill: var(--bot-ground-core);
+}
+
+.blush {
+  fill: var(--bot-blush);
+}
+
+.heart {
+  fill: var(--bot-heart);
+}
