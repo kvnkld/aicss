@@ -1395,9 +1395,20 @@ function surfaceOf(root: HTMLElement) {
       boxShadow: ring,
       backgroundColor: "transparent",
       backgroundImage: "none",
-      backdropFilter: "none",
-      webkitBackdropFilter: "none",
     },
+  };
+}
+
+/**
+ * Drops the bar's own blur while the halo carries it. Set inline, not as a keyframe: iOS WebKit keeps
+ * an animated backdrop-filter as a stale layer after the animation ends, painted offset over the content.
+ */
+function dropBlur(root: HTMLElement) {
+  root.style.setProperty("-webkit-backdrop-filter", "none");
+  root.style.setProperty("backdrop-filter", "none");
+  return () => {
+    root.style.removeProperty("-webkit-backdrop-filter");
+    root.style.removeProperty("backdrop-filter");
   };
 }
 
@@ -1500,6 +1511,8 @@ export function VoiceChat({
       ],
       timing,
     );
+    const restoreBlur = dropBlur(root);
+    clip.finished.then(restoreBlur, restoreBlur);
     const fly = agent.animate(
       [{ transform: placeOn(agent.getBoundingClientRect(), from.agent) }, { transform: "none" }],
       timing,
@@ -1712,6 +1725,7 @@ export function VoiceChat({
         const box = root.getBoundingClientRect();
         const seed = within(box, to.box);
         const { halo: surface, bare } = surfaceOf(root);
+        dropBlur(root);
         root.animate(
           [
             { clipPath: "inset(-1px round 25px)", ...bare },
